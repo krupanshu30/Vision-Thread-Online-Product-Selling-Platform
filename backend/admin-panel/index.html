@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vision Thread Admin Panel | @vision_thread00</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- ==================== LOGIN PAGE ==================== -->
+  <div id="loginPage" class="login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="logo-icon">VT</div>
+        <h1>Vision Thread</h1>
+        <p>Admin Portal • @vision_thread00</p>
+      </div>
+      <div id="loginError" class="alert alert-error hidden"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Email or Username</label>
+          <input type="text" id="loginIdentifier" placeholder="admin@visionthread.in or visionthread_admin" required autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-icon-wrap">
+            <input type="password" id="loginPassword" placeholder="Enter your password" required autocomplete="current-password" />
+            <button type="button" class="toggle-password" onclick="togglePassword()" title="Show/Hide password">👁</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+          <span>🔐 Sign In to Admin Panel</span>
+        </button>
+      </form>
+      <p class="login-note">🔒 Secure admin-only access. No public registration.</p>
+      <div class="login-credentials-hint">
+        <small>📧 Email: admin@visionthread.in | 🔑 Password: Admin@123</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN PANEL ==================== -->
+  <div id="adminApp" class="admin-app hidden">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-icon-sm">VT</div>
+          <div>
+            <span class="brand-name">Vision Thread</span>
+            <span class="brand-tag">Admin Panel</span>
+          </div>
+        </div>
+        <button class="sidebar-close" onclick="toggleSidebar()" id="sidebarClose">✕</button>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-section="dashboard" onclick="showSection('dashboard')">
+          <span class="nav-icon">📊</span><span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-section="orders" onclick="showSection('orders')">
+          <span class="nav-icon">🛍️</span><span>Orders</span>
+          <span class="nav-badge" id="pendingBadge">0</span>
+        </a>
+        <a href="#" class="nav-item" data-section="custom-orders" onclick="showSection('custom-orders')">
+          <span class="nav-icon">💕</span><span>Custom Orders</span>
+          <span class="nav-badge" id="customBadge">0</span>
+        </a>
+        <a href="#" class="nav-item" data-section="products" onclick="showSection('products')">
+          <span class="nav-icon">🌸</span><span>Products</span>
+        </a>
+        <a href="#" class="nav-item" data-section="messages" onclick="showSection('messages')">
+          <span class="nav-icon">✉️</span><span>Messages</span>
+          <span class="nav-badge" id="msgBadge">0</span>
+        </a>
+        <a href="#" class="nav-item" data-section="coupons" onclick="showSection('coupons')">
+          <span class="nav-icon">🎟️</span><span>Coupons</span>
+        </a>
+        <a href="#" class="nav-item" data-section="customers" onclick="showSection('customers')">
+          <span class="nav-icon">👥</span><span>Customers & Users</span>
+        </a>
+        <a href="#" class="nav-item" data-section="settings" onclick="showSection('settings')">
+          <span class="nav-icon">⚙️</span><span>Settings</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="admin-info" id="adminInfo"></div>
+        <button class="btn-logout" onclick="logout()">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <h2 class="topbar-title" id="pageTitle">Dashboard</h2>
+        <div class="topbar-actions">
+          <span class="topbar-time" id="currentTime"></span>
+          <a href="http://127.0.0.1:5500" target="_blank" class="btn btn-sm">🌐 View Site</a>
+        </div>
+      </header>
+
+      <!-- ============ DASHBOARD SECTION ============ -->
+      <section id="section-dashboard" class="section active">
+        <div class="section-header">
+          <h2>📊 Dashboard Overview</h2>
+          <button class="btn btn-sm" onclick="loadDashboard()">🔄 Refresh</button>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card pink">
+            <div class="stat-icon">🛍️</div>
+            <div class="stat-info"><span class="stat-value" id="statOrders">-</span><span class="stat-label">Total Orders</span></div>
+          </div>
+          <div class="stat-card rose">
+            <div class="stat-icon">₹</div>
+            <div class="stat-info"><span class="stat-value" id="statRevenue">-</span><span class="stat-label">Total Revenue</span></div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-icon">🌸</div>
+            <div class="stat-info"><span class="stat-value" id="statProducts">-</span><span class="stat-label">Products</span></div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-icon">💕</div>
+            <div class="stat-info"><span class="stat-value" id="statCustom">-</span><span class="stat-label">Custom Orders</span></div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-info"><span class="stat-value" id="statPending">-</span><span class="stat-label">Pending Orders</span></div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon">✉️</div>
+            <div class="stat-info"><span class="stat-value" id="statMessages">-</span><span class="stat-label">Unread Messages</span></div>
+          </div>
+        </div>
+
+        <!-- Recent Orders Table -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h3>🕐 Recent Orders</h3>
+            <button class="btn btn-sm" onclick="showSection('orders')">View All</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="recentOrdersTable">
+              <thead><tr><th>Order ID</th><th>Customer</th><th>Mobile</th><th>Amount</th><th>Payment</th><th>Status</th><th>Date</th></tr></thead>
+              <tbody id="recentOrdersBody"><tr><td colspan="7" class="empty-row">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ORDERS SECTION ============ -->
+      <section id="section-orders" class="section">
+        <div class="section-header">
+          <h2>🛍️ All Orders</h2>
+          <div class="header-actions">
+            <input type="text" id="orderSearch" placeholder="Search orders..." class="search-input" oninput="searchOrders(this.value)" />
+            <select id="orderStatusFilter" onchange="filterOrdersByStatus(this.value)" class="filter-select">
+              <option value="">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="processing">Processing</option>
+              <option value="completed">Completed</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button class="btn btn-sm" onclick="loadOrders()">🔄 Refresh</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Order ID</th><th>Customer</th><th>Mobile</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="ordersBody"><tr><td colspan="8" class="empty-row">Loading...</td></tr></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="ordersPagination"></div>
+        </div>
+      </section>
+
+      <!-- ============ CUSTOM ORDERS SECTION ============ -->
+      <section id="section-custom-orders" class="section">
+        <div class="section-header">
+          <h2>💕 Custom Orders</h2>
+          <div class="header-actions">
+            <input type="text" id="customSearch" placeholder="Search..." class="search-input" oninput="searchCustomOrders(this.value)" />
+            <select id="customStatusFilter" onchange="filterCustomOrders(this.value)" class="filter-select">
+              <option value="">All Status</option>
+              <option value="new">New</option>
+              <option value="in_review">In Review</option>
+              <option value="approved">Approved</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button class="btn btn-sm" onclick="loadCustomOrders()">🔄 Refresh</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Ref</th><th>Customer</th><th>Mobile</th><th>Product</th><th>Qty</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="customOrdersBody"><tr><td colspan="8" class="empty-row">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PRODUCTS SECTION ============ -->
+      <section id="section-products" class="section">
+        <div class="section-header">
+          <h2>🌸 Manage Products</h2>
+          <div class="header-actions">
+            <input type="text" id="productSearch" placeholder="Search products..." class="search-input" oninput="searchProducts(this.value)" />
+            <button class="btn btn-primary" onclick="openProductModal()">+ Add Product</button>
+            <button class="btn btn-sm" onclick="loadProducts()">🔄 Refresh</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>MRP</th><th>Stock</th><th>Badge</th><th>Actions</th></tr></thead>
+              <tbody id="productsBody"><tr><td colspan="8" class="empty-row">Loading...</td></tr></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="productsPagination"></div>
+        </div>
+      </section>
+
+      <!-- ============ MESSAGES SECTION ============ -->
+      <section id="section-messages" class="section">
+        <div class="section-header">
+          <h2>✉️ Contact Messages</h2>
+          <button class="btn btn-sm" onclick="loadMessages()">🔄 Refresh</button>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Name</th><th>Mobile</th><th>Message</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="messagesBody"><tr><td colspan="6" class="empty-row">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ COUPONS SECTION ============ -->
+      <section id="section-coupons" class="section">
+        <div class="section-header">
+          <h2>🎟️ Coupon Codes</h2>
+          <button class="btn btn-primary" onclick="openCouponModal()">+ Add Coupon</button>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Min Order</th><th>Used</th><th>Status</th><th>Expires</th><th>Actions</th></tr></thead>
+              <tbody id="couponsBody"><tr><td colspan="8" class="empty-row">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ CUSTOMERS & USERS SECTION ============ -->
+      <section id="section-customers" class="section">
+        <div class="section-header">
+          <h2>👥 Customers & Website Users</h2>
+          <div class="header-actions">
+            <input type="text" id="customerSearch" placeholder="Search customer name, phone, email..." class="search-input" oninput="searchCustomers(this.value)" />
+            <button class="btn btn-sm" onclick="loadCustomers()">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <!-- Customer Records Table -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3>🛍️ Customer Directory (From Orders)</h3>
+            <span class="badge badge-pink" id="totalCustomersBadge">0 Customers</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Customer Name</th><th>Mobile / WhatsApp</th><th>Email</th><th>City / State</th><th>Total Orders</th><th>Total Spent</th><th>Last Order</th><th>Action</th></tr></thead>
+              <tbody id="customersBody"><tr><td colspan="8" class="empty-row">Loading customer records...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Store Owner Admin Accounts -->
+        <div class="card">
+          <div class="card-header">
+            <h3>🔐 Website Owner & Admin Accounts</h3>
+            <span class="badge badge-green">Authorized Only</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th>Created At</th></tr></thead>
+              <tbody id="adminsBody"><tr><td colspan="7" class="empty-row">Loading admin accounts...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SETTINGS SECTION ============ -->
+      <section id="section-settings" class="section">
+        <div class="section-header"><h2>⚙️ Settings</h2></div>
+        <div class="settings-grid">
+          <div class="card">
+            <div class="card-header"><h3>🔑 Change Password</h3></div>
+            <div id="pwAlert" class="alert hidden"></div>
+            <form id="changePasswordForm" class="form-body">
+              <div class="form-group">
+                <label>Current Password</label>
+                <input type="password" id="currentPw" required />
+              </div>
+              <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="newPw" required minlength="8" />
+              </div>
+              <div class="form-group">
+                <label>Confirm New Password</label>
+                <input type="password" id="confirmPw" required minlength="8" />
+              </div>
+              <button type="submit" class="btn btn-primary">Update Password</button>
+            </form>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>ℹ️ System Info</h3></div>
+            <div class="info-grid">
+              <div class="info-item"><span>Backend</span><strong>Node.js + Express</strong></div>
+              <div class="info-item"><span>Database</span><strong>MySQL</strong></div>
+              <div class="info-item"><span>Auth</span><strong>JWT + bcrypt</strong></div>
+              <div class="info-item"><span>Website</span><strong>Vision Thread (@vision_thread00)</strong></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ============ MODALS ============ -->
+
+  <!-- Product Modal -->
+  <div id="productModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="productModalTitle">Add New Product</h3>
+        <button class="modal-close" onclick="closeProductModal()">✕</button>
+      </div>
+      <div id="productFormAlert" class="alert hidden"></div>
+      <form id="productForm">
+        <input type="hidden" id="editProductId" />
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Product Name *</label>
+            <input type="text" id="pName" required placeholder="e.g. Lavender Pot Bouquet" />
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="pCategory" required>
+              <option value="Handmade Flowers">🌸 Handmade Flowers</option>
+              <option value="Hair Accessories">🎀 Hair Accessories</option>
+              <option value="Keychains">🔑 Keychains</option>
+              <option value="Bouquets">💐 Bouquets</option>
+              <option value="Gifts &amp; Hampers">🎁 Gifts &amp; Hampers</option>
+              <option value="Festive Crafts">🪔 Festive Crafts</option>
+              <option value="Home Decor">🏠 Home Decor</option>
+              <option value="Other Crafts">✨ Other Crafts</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Selling Price (₹) *</label>
+            <input type="number" id="pPrice" required min="1" placeholder="e.g. 299" />
+          </div>
+          <div class="form-group">
+            <label>Original MRP (₹)</label>
+            <input type="number" id="pOriginalPrice" min="1" placeholder="e.g. 450" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Product Image (File Upload or URL)</label>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <label class="btn btn-secondary btn-sm" style="cursor:pointer;margin:0;display:inline-flex;align-items:center;gap:6px">
+                📷 Choose & Upload Image File
+                <input type="file" id="pImageFile" accept="image/*" style="display:none" onchange="uploadProductImage(this, 'pImage', 'pImagePreview', 'pImagePreviewWrap')" />
+              </label>
+              <span id="pImageUploadStatus" style="font-size:12px;color:var(--text-light)"></span>
+            </div>
+            <input type="text" id="pImage" placeholder="images/pink-purple-lily-bouquet.jpg or https://... or uploaded path" oninput="syncImagePreview('pImage', 'pImagePreview', 'pImagePreviewWrap')" />
+            <div id="pImagePreviewWrap" style="display:none;align-items:center;gap:12px;padding:8px 12px;background:var(--blue-50);border-radius:10px;border:1px dashed var(--blue-primary)">
+              <img id="pImagePreview" src="" alt="Preview" style="width:58px;height:58px;object-fit:cover;border-radius:8px;border:1.5px solid var(--border)" onerror="this.src='';document.getElementById('pImagePreviewWrap').style.display='none'" />
+              <div>
+                <span style="font-size:12px;font-weight:700;color:var(--text)">Live Image Preview</span>
+                <span style="display:block;font-size:11px;color:var(--text-light)">Looks great! This image will be shown across the store.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Badge</label>
+          <input type="text" id="pBadge" placeholder="e.g. Bestseller, New Arrival, Trending" />
+        </div>
+        <div class="form-group">
+          <label>Short Description *</label>
+          <input type="text" id="pShortDesc" required placeholder="One-line summary for product cards" />
+        </div>
+        <div class="form-group">
+          <label>Full Description</label>
+          <textarea id="pFullDesc" rows="3" placeholder="Complete product description..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Materials</label>
+          <input type="text" id="pMaterials" placeholder="e.g. Chenille pipe cleaners, satin ribbon" />
+        </div>
+        <div class="form-group">
+          <label>Dimensions</label>
+          <input type="text" id="pDimensions" placeholder="e.g. Height: 30cm, Width: 18cm" />
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group check-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="pCustomizable" checked />
+              <span>Customizable</span>
+            </label>
+          </div>
+          <div class="form-group check-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="pInStock" checked />
+              <span>In Stock</span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="closeProductModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="productSubmitBtn">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Quick Change Product Image Modal -->
+  <div id="quickImageModal" class="modal-overlay hidden">
+    <div class="modal-box" style="max-width:480px">
+      <div class="modal-header">
+        <h3 id="quickImageModalTitle">Change Product Image</h3>
+        <button class="modal-close" onclick="closeQuickImageModal()">✕</button>
+      </div>
+      <div style="padding:1.25rem 1.5rem">
+        <input type="hidden" id="quickImageProductId" />
+        <div id="quickImageAlert" class="alert hidden" style="margin-bottom:1rem"></div>
+
+        <div style="text-align:center;margin-bottom:1.25rem">
+          <div style="position:relative;display:inline-block">
+            <img id="quickImagePreview" src="" alt="Product Preview" style="width:130px;height:130px;object-fit:cover;border-radius:12px;border:2px solid var(--border);box-shadow:0 4px 12px rgba(0,0,0,0.08)" onerror="this.src='';this.alt='No Image Available';" />
+          </div>
+          <div id="quickImageName" style="font-weight:700;margin-top:8px;font-size:0.95rem;color:var(--text)"></div>
+        </div>
+
+        <div class="form-group">
+          <label style="font-weight:700;font-size:0.85rem">Option 1: Upload from Computer</label>
+          <div style="display:flex;gap:10px;align-items:center">
+            <label class="btn btn-secondary btn-sm" style="cursor:pointer;margin:0;display:inline-flex;align-items:center;gap:6px">
+              📁 Choose File to Upload
+              <input type="file" id="quickImageFileInput" accept="image/*" style="display:none" onchange="uploadProductImage(this, 'quickImageUrlInput', 'quickImagePreview')" />
+            </label>
+            <span id="quickImageUploadStatus" style="font-size:12px;color:var(--text-light)">JPG, PNG, WEBP, GIF, SVG</span>
+          </div>
+        </div>
+
+        <div style="text-align:center;color:var(--text-light);font-size:12px;margin:12px 0;position:relative">
+          <span style="background:white;padding:0 8px;position:relative;z-index:1">— OR —</span>
+          <div style="position:absolute;top:50%;left:0;right:0;border-top:1px solid var(--border);z-index:0"></div>
+        </div>
+
+        <div class="form-group">
+          <label style="font-weight:700;font-size:0.85rem">Option 2: Image URL or Path</label>
+          <input type="text" id="quickImageUrlInput" placeholder="images/pink-purple-lily-bouquet.jpg or https://..." oninput="syncImagePreview('quickImageUrlInput', 'quickImagePreview')" />
+        </div>
+
+        <div class="modal-footer" style="padding-bottom:0">
+          <button type="button" class="btn btn-ghost" onclick="closeQuickImageModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveQuickImageBtn" onclick="saveQuickProductImage()">Update Image</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Detail Modal -->
+  <div id="orderDetailModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Order Details</h3>
+        <button class="modal-close" onclick="closeOrderModal()">✕</button>
+      </div>
+      <div id="orderDetailContent"></div>
+    </div>
+  </div>
+
+  <!-- Custom Order Detail Modal -->
+  <div id="customDetailModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Custom Order Details</h3>
+        <button class="modal-close" onclick="closeCustomModal()">✕</button>
+      </div>
+      <div id="customDetailContent"></div>
+    </div>
+  </div>
+
+  <!-- Coupon Modal -->
+  <div id="couponModal" class="modal-overlay hidden">
+    <div class="modal-box" style="max-width:460px">
+      <div class="modal-header">
+        <h3>Add New Coupon</h3>
+        <button class="modal-close" onclick="closeCouponModal()">✕</button>
+      </div>
+      <div id="couponFormAlert" class="alert hidden"></div>
+      <form id="couponForm">
+        <div class="form-group">
+          <label>Coupon Code *</label>
+          <input type="text" id="cCode" required placeholder="e.g. SAVE20" style="text-transform:uppercase" />
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Type</label>
+            <select id="cType">
+              <option value="percentage">Percentage (%)</option>
+              <option value="flat">Flat Amount (₹)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Discount Value *</label>
+            <input type="number" id="cValue" required min="1" placeholder="e.g. 10" />
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Min Order (₹)</label>
+            <input type="number" id="cMinOrder" min="0" value="0" placeholder="0" />
+          </div>
+          <div class="form-group">
+            <label>Max Uses</label>
+            <input type="number" id="cMaxUses" min="1" placeholder="Unlimited" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Expires At</label>
+          <input type="datetime-local" id="cExpires" />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="closeCouponModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Coupon</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toastContainer"></div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vision Thread (@vision_thread00) | Handmade With Love ❤️</title>
+  <meta name="description" content="Discover beautiful handmade crafts, customized gifts, festive torans, pipe cleaner bouquets and hair accessories by Vision Thread (@vision_thread00). Handmade with love in India." />
+
+  <!-- Google Fonts: Playfair Display & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fdf2f8',
+              100: '#fce7f3',
+              200: '#fbcfe8',
+              300: '#f9a8d4',
+              400: '#f472b6',
+              500: '#ec4899', // Primary Brand Pink
+              600: '#db2777',
+              700: '#be185d',
+              800: '#9d174d',
+              900: '#831843'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="bg-[#fffdfa] text-gray-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Top Announcement Bar -->
+  <div class="bg-gradient-to-r from-pink-600 via-pink-500 to-rose-500 text-white text-xs py-2 px-4 text-center font-medium shadow-sm">
+    <div class="container mx-auto flex items-center justify-center gap-2 flex-wrap">
+      <span>🌸 <strong>Handmade With Love:</strong> Free Delivery on orders over ₹499!</span>
+      <span class="hidden md:inline">•</span>
+      <span class="hidden md:inline">Custom designs on Instagram <a href="https://instagram.com/vision_thread00" target="_blank" class="underline font-bold hover:text-pink-100">@vision_thread00</a> ✨</span>
+      <span class="hidden sm:inline">•</span>
+      <a href="https://www.google.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white text-[11px] px-2.5 py-0.5 rounded-full transition-colors font-semibold" title="Direct link to open Google">
+        <span>🌐 Open Google</span>
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Sticky Header Navigation -->
+  <header class="sticky top-0 z-50 header-glass transition-all">
+    <div class="container mx-auto px-4 lg:px-8 py-3.5 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#/" class="flex items-center gap-2.5 text-decoration-none group">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-pink-400 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879a3 3 0 11-4.242-4.242L12 5m0 7l-2 2"></path></svg>
+        </div>
+        <div>
+          <span class="font-serif text-xl md:text-2xl font-bold tracking-tight text-gray-900 group-hover:text-pink-600 transition-colors">Vision Thread</span>
+          <span class="block text-[10px] font-semibold text-pink-600 tracking-wider">@vision_thread00</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden lg:flex items-center gap-1 xl:gap-2">
+        <a href="#/" class="nav-link text-sm font-semibold">Home</a>
+        <a href="#/shop" class="nav-link text-sm font-semibold">Shop</a>
+        <a href="#/shop" onclick="app.selectCategoryAndShop('all')" class="nav-link text-sm font-semibold">Categories</a>
+        <a href="#/custom-orders" class="nav-link text-sm font-semibold flex items-center gap-1">
+          <span>Custom Order</span>
+          <span class="text-[10px] bg-pink-100 text-pink-700 px-1.5 py-0.5 rounded-full font-bold">Custom</span>
+        </a>
+        <a href="#/about" class="nav-link text-sm font-semibold">About</a>
+        <a href="#/contact" class="nav-link text-sm font-semibold">Contact</a>
+      </nav>
+
+      <!-- Right Header Actions (Search, Wishlist, Cart) -->
+      <div class="flex items-center gap-2 md:gap-3">
+        
+        <!-- Live Search Input (Desktop) -->
+        <div class="relative hidden sm:block w-44 md:w-56">
+          <input type="text" id="headerSearchInput" placeholder="Search crafts..." 
+            class="w-full text-xs bg-pink-50/60 border border-pink-200 rounded-full py-2 pl-8 pr-3 focus:outline-none focus:border-pink-500 focus:bg-white transition-all" />
+          <svg class="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+
+        <!-- Wishlist Button -->
+        <button onclick="app.openWishlistDrawer()" class="relative p-2.5 rounded-full hover:bg-pink-50 text-gray-600 hover:text-pink-600 transition-colors" title="View Wishlist">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+          <span class="wishlist-count-badge hidden absolute -top-0.5 -right-0.5 w-4 h-4 bg-pink-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
+        </button>
+
+        <!-- Cart Button -->
+        <button onclick="app.openCartDrawer()" class="relative p-2.5 rounded-full bg-pink-50 text-pink-600 hover:bg-pink-100 transition-all flex items-center gap-1.5" title="View Cart">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+          <span class="hidden md:inline text-xs font-bold">Cart</span>
+          <span class="cart-count-badge hidden absolute -top-1 -right-1 w-5 h-5 bg-pink-600 text-white text-[11px] font-bold rounded-full flex items-center justify-center shadow-sm">0</span>
+        </button>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg text-gray-600 hover:text-pink-600 hover:bg-pink-50 focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobileMenuDrawer" class="hidden lg:hidden bg-white/95 backdrop-blur-md border-b border-pink-100 px-6 py-4 space-y-2 shadow-lg">
+      <div class="sm:hidden mb-3">
+        <input type="text" id="mobileSearchInput" placeholder="Search crafts..." 
+          oninput="app.searchQuery = this.value; app.navigateTo('#/shop'); app.renderShopProducts();"
+          class="w-full text-xs bg-pink-50 border border-pink-200 rounded-full py-2 px-4 focus:outline-none focus:border-pink-500" />
+      </div>
+      <a href="#/" onclick="document.getElementById('mobileMenuDrawer').classList.add('hidden')" class="block py-2 text-sm font-medium text-gray-700 hover:text-pink-600">Home</a>
+      <a href="#/shop" onclick="document.getElementById('mobileMenuDrawer').classList.add('hidden')" class="block py-2 text-sm font-medium text-gray-700 hover:text-pink-600">Shop Collection</a>
+      <a href="#/custom-orders" onclick="document.getElementById('mobileMenuDrawer').classList.add('hidden')" class="block py-2 text-sm font-medium text-pink-600 font-semibold">Custom Order 💕</a>
+      <a href="#/about" onclick="document.getElementById('mobileMenuDrawer').classList.add('hidden')" class="block py-2 text-sm font-medium text-gray-700 hover:text-pink-600">About Us</a>
+      <a href="#/contact" onclick="document.getElementById('mobileMenuDrawer').classList.add('hidden')" class="block py-2 text-sm font-medium text-gray-700 hover:text-pink-600">Contact Us</a>
+      <a href="#/cart" onclick="document.getElementById('mobileMenuDrawer').classList.add('hidden')" class="block py-2 text-sm font-medium text-gray-700 hover:text-pink-600">Shopping Cart</a>
+      <div class="pt-2 border-t border-pink-100 flex items-center justify-between text-xs text-gray-500">
+        <span>Follow us:</span>
+        <a href="https://instagram.com/vision_thread00" target="_blank" class="font-bold text-pink-600">@vision_thread00</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       PAGE 1: HOME (#/)
+       ========================================================================= -->
+  <main id="pageHome" class="page-view flex-grow">
+    
+    <!-- Hero Section -->
+    <section class="hero-gradient-bg py-12 md:py-20 px-4 relative overflow-hidden">
+      <div class="hero-blob -top-24 -right-24"></div>
+      <div class="hero-blob -bottom-24 -left-24"></div>
+
+      <div class="container mx-auto relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <!-- Left Hero Copy -->
+          <div class="lg:col-span-7 text-center lg:text-left space-y-4 md:space-y-6">
+            <div class="inline-flex items-center gap-2 craft-tag animate-pulse">
+              <span>✨ Handcrafted With Passion & Care</span>
+            </div>
+
+            <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.15]">
+              Handmade With Love <span class="text-pink-600">❤️</span>
+            </h1>
+
+            <p class="font-serif text-xl sm:text-2xl text-pink-600 italic font-semibold">
+              “Something Handmade. Something Unique. Something You.”
+            </p>
+
+            <p class="text-sm md:text-base text-gray-600 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              Discover beautiful handmade creations crafted with love, care and creativity. Perfect for gifting, festivals, celebrations and adding a personal touch to your special moments.
+            </p>
+
+            <!-- Buttons: Shop Now & Custom Order -->
+            <div class="flex items-center justify-center lg:justify-start gap-4 pt-2">
+              <a href="#/shop" class="btn-primary">
+                <span>Shop Now</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </a>
+              <a href="#/custom-orders" class="btn-secondary">
+                <span>Custom Order 💕</span>
+              </a>
+            </div>
+
+            <!-- Trust Pills -->
+            <div class="pt-4 flex items-center justify-center lg:justify-start gap-4 text-xs text-gray-500 flex-wrap">
+              <span class="flex items-center gap-1.5"><span class="text-pink-500">✓</span> 100% Handcrafted</span>
+              <span class="flex items-center gap-1.5"><span class="text-pink-500">✓</span> Pan-India Shipping</span>
+              <span class="flex items-center gap-1.5"><span class="text-pink-500">✓</span> Custom Colors on DM</span>
+            </div>
+          </div>
+
+          <!-- Right Hero Showcase Visual -->
+          <div class="lg:col-span-5 relative">
+            <div class="relative mx-auto max-w-sm sm:max-w-md">
+              <div class="rounded-3xl overflow-hidden shadow-2xl border-4 border-white aspect-[4/5] bg-pink-100 relative group">
+                <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80" 
+                     alt="Vision Thread Handmade Flowers" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                
+                <!-- Floating Handmade Badge -->
+                <div class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-lg border border-pink-100 flex items-center justify-between">
+                  <div>
+                    <span class="text-[10px] font-bold text-pink-600 uppercase tracking-wider">Artisan Showcase</span>
+                    <h4 class="font-serif font-bold text-gray-900 text-sm">Everlasting Lily Bouquet</h4>
+                    <p class="text-xs text-gray-500">₹350 • Crafted with Chenille Velvet</p>
+                  </div>
+                  <a href="#/shop" class="w-8 h-8 rounded-full bg-pink-600 text-white flex items-center justify-center hover:bg-pink-700 transition-colors">
+                    →
+                  </a>
+                </div>
+              </div>
+
+              <!-- Decorative Floating Stamp -->
+              <div class="absolute -top-4 -left-4 bg-white rounded-2xl p-2.5 shadow-lg border border-pink-200 hidden sm:flex items-center gap-2">
+                <span class="text-xl">🌸</span>
+                <span class="text-xs font-bold text-gray-800">Made With Care</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust Badges Section -->
+    <section class="py-8 bg-white border-y border-pink-100">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 text-center">
+          <div class="p-3">
+            <div class="text-2xl md:text-3xl mb-1.5">💕</div>
+            <h4 class="text-xs md:text-sm font-bold text-gray-800">Handmade With Love</h4>
+            <p class="text-[11px] text-gray-500 mt-0.5">Every stitch with patience</p>
+          </div>
+          <div class="p-3">
+            <div class="text-2xl md:text-3xl mb-1.5">🎨</div>
+            <h4 class="text-xs md:text-sm font-bold text-gray-800">Custom Designs Available</h4>
+            <p class="text-[11px] text-gray-500 mt-0.5">Personalize color & message</p>
+          </div>
+          <div class="p-3">
+            <div class="text-2xl md:text-3xl mb-1.5">📦</div>
+            <h4 class="text-xs md:text-sm font-bold text-gray-800">Carefully Packed</h4>
+            <p class="text-[11px] text-gray-500 mt-0.5">Safe & gift-ready delivery</p>
+          </div>
+          <div class="p-3">
+            <div class="text-2xl md:text-3xl mb-1.5">✨</div>
+            <h4 class="text-xs md:text-sm font-bold text-gray-800">Unique & Creative</h4>
+            <p class="text-[11px] text-gray-500 mt-0.5">Distinctive craft aesthetics</p>
+          </div>
+          <div class="p-3 col-span-2 md:col-span-1">
+            <div class="text-2xl md:text-3xl mb-1.5">🤝</div>
+            <h4 class="text-xs md:text-sm font-bold text-gray-800">Made With Care</h4>
+            <p class="text-[11px] text-gray-500 mt-0.5">Trustworthy artisan brand</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Categories Section -->
+    <section class="py-14 px-4 bg-[#fffdfa]">
+      <div class="container mx-auto">
+        <div class="text-center max-w-xl mx-auto mb-10">
+          <span class="craft-tag">Explore By Collection</span>
+          <h2 class="font-serif text-3xl font-bold text-gray-900 mt-2">Product Categories</h2>
+          <p class="text-sm text-gray-600 mt-1">Browse our carefully curated collections of flowers, accessories, torans and thoughtful hampers.</p>
+        </div>
+
+        <!-- 8 Product Categories Grid -->
+        <div id="categoriesGrid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 md:gap-4">
+          <!-- Populated dynamically by app.renderCategories() -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Products Showcase Section -->
+    <section class="py-14 px-4 bg-white border-t border-pink-100">
+      <div class="container mx-auto">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+          <div>
+            <span class="craft-tag">Customer Favorites</span>
+            <h2 class="font-serif text-3xl font-bold text-gray-900 mt-1">Handmade Highlights</h2>
+            <p class="text-xs md:text-sm text-gray-500">Trending pieces crafted with meticulous detail and everlasting beauty.</p>
+          </div>
+          <a href="#/shop" class="btn-secondary text-xs py-2 px-4 whitespace-nowrap">
+            View All Collection →
+          </a>
+        </div>
+
+        <!-- Desktop: 4 items/row, Mobile: 2 items/row -->
+        <div id="featuredProductsGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+          <!-- Populated by app.renderProducts() -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Made Just For You Custom Order Callout Banner -->
+    <section class="py-14 px-4 bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white relative overflow-hidden">
+      <div class="container mx-auto max-w-4xl text-center relative z-10 space-y-4">
+        <span class="bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider inline-block">
+          Bespoke Crafts
+        </span>
+        <h2 class="font-serif text-3xl md:text-4xl font-bold">Made Just For You 💕</h2>
+        <p class="text-sm md:text-base text-pink-100 max-w-xl mx-auto leading-relaxed">
+          Have a design or color combination in mind? We create customized handmade products specially for you with your choice of flowers, colors, and sweet personalized notes.
+        </p>
+        <div class="pt-2 flex items-center justify-center gap-3 flex-wrap">
+          <a href="#/custom-orders" class="bg-white text-pink-600 hover:bg-pink-50 font-bold px-6 py-3 rounded-full text-sm shadow-lg transition-all hover:scale-105">
+            Submit Custom Request
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Instagram Feed Section -->
+    <section class="py-16 px-4 bg-[#fffdfa]">
+      <div class="container mx-auto">
+        <div class="text-center max-w-xl mx-auto mb-10">
+          <span class="craft-tag">Instagram Community</span>
+          <h2 class="font-serif text-3xl font-bold text-gray-900 mt-2">Follow Our Handmade Journey ✨</h2>
+          <p class="text-sm text-gray-600 mt-1">Get behind-the-scenes craft making, new drops, and customer unboxings.</p>
+          <div class="mt-3">
+            <a href="https://instagram.com/vision_thread00" target="_blank" rel="noopener noreferrer" 
+               class="inline-flex items-center gap-2 text-pink-600 hover:text-pink-700 font-bold text-sm bg-pink-50 border border-pink-200 px-4 py-1.5 rounded-full shadow-xs">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              <span>@vision_thread00</span>
+            </a>
+          </div>
+        </div>
+
+        <div id="instagramPostsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
+          <!-- Populated by app.renderInstagramGrid() -->
+        </div>
+
+        <div class="text-center mt-8">
+          <a href="https://instagram.com/vision_thread00" target="_blank" rel="noopener noreferrer" class="btn-primary">
+            <span>Follow on Instagram</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Handmade Philosophy & Testimonial Section -->
+    <section class="py-14 px-4 bg-pink-50/50 border-t border-pink-100">
+      <div class="container mx-auto max-w-4xl text-center space-y-6">
+        <span class="text-3xl">🌸 🎀 🪔</span>
+        <h3 class="font-serif text-2xl md:text-3xl font-bold text-gray-800">
+          “Every thread carries a story. Every blossom holds a smile.”
+        </h3>
+        <p class="text-sm md:text-base text-gray-600 leading-relaxed italic">
+          At Vision Thread, nothing is mass manufactured. Each petal is individually twirled, each hair accessory gently woven, and each festive toran assembled with blessing and precision. When you buy from us, you take home a piece of pure art.
+        </p>
+        <div class="flex items-center justify-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-pink-600 text-white flex items-center justify-center font-serif font-bold text-xs">VT</div>
+          <div class="text-left">
+            <span class="block text-xs font-bold text-gray-800">Vision Thread Studio</span>
+            <span class="block text-[10px] text-pink-600 font-semibold">Handcrafted in India</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================================================
+       PAGE 2: SHOP / COLLECTION (#/shop)
+       ========================================================================= -->
+  <main id="pageShop" class="page-view hidden flex-grow py-8 px-4 bg-[#fffdfa]">
+    <div class="container mx-auto">
+      
+      <!-- Breadcrumb & Header -->
+      <div class="mb-6">
+        <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
+          <a href="#/" class="hover:text-pink-600">Home</a>
+          <span>/</span>
+          <span class="text-pink-600 font-medium">Shop Collection</span>
+        </div>
+        <h1 class="font-serif text-3xl md:text-4xl font-bold text-gray-900">Handmade Collection</h1>
+        <p class="text-xs md:text-sm text-gray-500 mt-1">Explore all handmade flowers, bouquets, festive decor & personalized accessories.</p>
+      </div>
+
+      <!-- Category Filter Pills (Horizontal Scroll) -->
+      <div class="overflow-x-auto pb-3 mb-6 no-scrollbar">
+        <div id="shopCategoryPills" class="flex gap-2 min-w-max">
+          <!-- Populated by app.renderCategories() -->
+        </div>
+      </div>
+
+      <!-- Search, Price Filter, and Sorting Bar -->
+      <div class="bg-white p-4 rounded-2xl border border-pink-100 shadow-sm mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        <!-- Live Search -->
+        <div class="relative w-full md:w-72">
+          <input type="text" id="shopSearchInput" placeholder="Search by name or craft..." 
+            class="w-full text-xs bg-pink-50/50 border border-pink-200 rounded-xl py-2.5 pl-8 pr-3 focus:outline-none focus:border-pink-500" />
+          <svg class="w-4 h-4 text-gray-400 absolute left-2.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+
+        <!-- Filter & Sort Selectors -->
+        <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end flex-wrap">
+          
+          <!-- Price Filter -->
+          <div class="flex items-center gap-1.5 text-xs text-gray-600">
+            <span>Price:</span>
+            <select id="priceFilterSelect" class="bg-pink-50/50 border border-pink-200 rounded-xl py-1.5 px-3 text-xs focus:outline-none focus:border-pink-500 font-medium">
+              <option value="all">All Prices</option>
+              <option value="under200">Under ₹200</option>
+              <option value="200to400">₹200 to ₹400</option>
+              <option value="above400">Above ₹400</option>
+            </select>
+          </div>
+
+          <!-- Sort Filter -->
+          <div class="flex items-center gap-1.5 text-xs text-gray-600">
+            <span>Sort By:</span>
+            <select id="sortFilterSelect" class="bg-pink-50/50 border border-pink-200 rounded-xl py-1.5 px-3 text-xs focus:outline-none focus:border-pink-500 font-medium">
+              <option value="default">Featured</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="rating">Top Rated</option>
+              <option value="name">Alphabetical</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Count -->
+      <div class="flex items-center justify-between text-xs text-gray-500 mb-4 px-1">
+        <span id="shopProductCount">Showing products...</span>
+        <button onclick="app.resetShopFilters()" class="text-pink-600 hover:underline">Reset Filters</button>
+      </div>
+
+      <!-- Shop Products Responsive Grid: 4 items/row desktop, 2 items/row mobile -->
+      <div id="shopProductsGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        <!-- Rendered by app.renderShopProducts() -->
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       PAGE 4: CUSTOM ORDERS ("Made Just For You 💕") (#/custom-orders)
+       ========================================================================= -->
+  <main id="pageCustomOrders" class="page-view hidden flex-grow py-12 px-4 bg-[#fffdfa]">
+    <div class="container mx-auto max-w-4xl">
+      
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="craft-tag">Bespoke Handmade Service</span>
+        <h1 class="font-serif text-3xl md:text-5xl font-bold text-gray-900 mt-2">Made Just For You 💕</h1>
+        <p class="text-sm md:text-base text-gray-600 mt-2 leading-relaxed">
+          “Have a design or color combination in mind? We create customized handmade products specially for you.”
+        </p>
+      </div>
+
+      <!-- 3 Simple Steps -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+        <div class="bg-white p-5 rounded-2xl border border-pink-100 text-center shadow-xs">
+          <div class="w-12 h-12 mx-auto rounded-full bg-pink-100 text-pink-600 flex items-center justify-center font-bold mb-3">1</div>
+          <h4 class="font-serif font-bold text-gray-800 text-sm">Tell Us Your Idea</h4>
+          <p class="text-xs text-gray-500 mt-1">Specify color combinations, event themes, or flower styles.</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-pink-100 text-center shadow-xs">
+          <div class="w-12 h-12 mx-auto rounded-full bg-pink-100 text-pink-600 flex items-center justify-center font-bold mb-3">2</div>
+          <h4 class="font-serif font-bold text-gray-800 text-sm">Design Approval</h4>
+          <p class="text-xs text-gray-500 mt-1">We confirm shades, ribbons, and custom tags directly on WhatsApp.</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-pink-100 text-center shadow-xs">
+          <div class="w-12 h-12 mx-auto rounded-full bg-pink-100 text-pink-600 flex items-center justify-center font-bold mb-3">3</div>
+          <h4 class="font-serif font-bold text-gray-800 text-sm">Delivered With Care</h4>
+          <p class="text-xs text-gray-500 mt-1">Crafted by hand, safely packed, and dispatched to your address.</p>
+        </div>
+      </div>
+
+      <!-- Custom Order Form Card -->
+      <div class="bg-white rounded-3xl border border-pink-200 p-6 md:p-10 shadow-soft">
+        <form onsubmit="app.handleCustomOrderSubmit(event)" class="space-y-6">
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- Customer Name -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Your Full Name *</label>
+              <input type="text" name="customName" required placeholder="e.g., Aarohi Sharma" 
+                class="w-full text-sm px-4 py-3 bg-pink-50/40 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500 focus:bg-white" />
+            </div>
+
+            <!-- Mobile Number -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Mobile Number (WhatsApp) *</label>
+              <input type="tel" name="customMobile" required placeholder="e.g., 9876543210" 
+                class="w-full text-sm px-4 py-3 bg-pink-50/40 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500 focus:bg-white" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- Product / Design -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Product / Design *</label>
+              <select name="customProduct" class="w-full text-sm px-4 py-3 bg-pink-50/40 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500 focus:bg-white">
+                <option value="Custom Bouquet">Custom Bouquet</option>
+                <option value="Single Flower Gift">Single Flower Gift</option>
+                <option value="Hair Accessory Set">Hair Accessory Set</option>
+                <option value="Festive Haar / Toran">Festive Haar / Toran</option>
+                <option value="Personalized Keychain">Personalized Keychain</option>
+                <option value="Curated Gift Hamper">Curated Gift Hamper</option>
+                <option value="Other Custom Craft">Other Custom Craft</option>
+              </select>
+            </div>
+
+            <!-- Preferred Color -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Preferred Colors</label>
+              <input type="text" name="customColor" placeholder="e.g., Pastel Lilac & Cream" 
+                class="w-full text-sm px-4 py-3 bg-pink-50/40 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500 focus:bg-white" />
+            </div>
+
+            <!-- Quantity -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Quantity</label>
+              <input type="number" name="customQty" min="1" value="1" 
+                class="w-full text-sm px-4 py-3 bg-pink-50/40 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500 focus:bg-white" />
+            </div>
+          </div>
+
+          <!-- Custom Requirements -->
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Custom Requirements & Instructions *</label>
+            <textarea name="customReq" rows="4" required placeholder="Describe what you want us to create: size, occasion, recipient name for gift tag, specific ribbons, etc." 
+              class="w-full text-sm px-4 py-3 bg-pink-50/40 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500 focus:bg-white"></textarea>
+          </div>
+
+          <!-- Upload Reference Image -->
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Upload Reference Image (Optional)</label>
+            <div class="craft-border-dashed p-6 rounded-2xl bg-pink-50/30 text-center cursor-pointer hover:bg-pink-50 transition-colors relative">
+              <input type="file" accept="image/*" onchange="app.previewCustomImage(this)" 
+                class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+              <div class="space-y-1">
+                <svg class="w-8 h-8 text-pink-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <p class="text-xs text-gray-600 font-medium">Click or drag an image here to upload reference</p>
+                <p class="text-[10px] text-gray-400">PNG, JPG, JPEG up to 10MB</p>
+              </div>
+            </div>
+
+            <!-- Image Preview Box -->
+            <div id="customImagePreviewContainer" class="hidden mt-3 p-3 bg-pink-50 rounded-xl flex items-center gap-3">
+              <img id="customImagePreview" src="" class="w-16 h-16 rounded-lg object-cover border border-pink-200" />
+              <div class="text-xs text-gray-600 font-medium">Reference Image Loaded!</div>
+            </div>
+          </div>
+
+          <!-- Submit Buttons -->
+          <div class="pt-4 flex flex-col sm:flex-row gap-3">
+            <button type="submit" class="btn-primary flex-1 py-3.5 text-sm">
+              Submit Request via WhatsApp 💬
+            </button>
+            <a href="https://instagram.com/vision_thread00" target="_blank" rel="noopener noreferrer" 
+               class="btn-secondary flex-1 py-3.5 text-sm">
+              DM us on Instagram ✨
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       PAGE 5: ABOUT US (#/about)
+       ========================================================================= -->
+  <main id="pageAbout" class="page-view hidden flex-grow py-12 px-4 bg-[#fffdfa]">
+    <div class="container mx-auto max-w-4xl">
+      
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="craft-tag">Our Story</span>
+        <h1 class="font-serif text-3xl md:text-5xl font-bold text-gray-900 mt-2">About Vision Thread</h1>
+        <p class="text-base text-pink-600 font-serif italic mt-1">“Handmade With Love ❤️”</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-12">
+        <div class="rounded-3xl overflow-hidden shadow-lg border-2 border-pink-100 aspect-square">
+          <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80" 
+               alt="Crafting Vision Thread" class="w-full h-full object-cover" />
+        </div>
+        <div class="space-y-4 text-sm md:text-base text-gray-600 leading-relaxed">
+          <h2 class="font-serif text-2xl font-bold text-gray-900">Crafted with Heart, Made to Cherish</h2>
+          <p>
+            Welcome to <strong>Vision Thread</strong> (<strong>@vision_thread00</strong>). What began as a heartfelt passion for tactile handmade artistry has blossomed into a cherished studio for handmade crafts, personalized gifts, decorative florals, and festive adornments.
+          </p>
+          <p>
+            In a fast-paced world dominated by plastic and mass production, we believe that real memories are sparked by things crafted slowly by human hands. Every pipe cleaner bouquet, every delicate chafa blossom, and every festive toran from Vision Thread represents hours of patient shaping and joyful devotion.
+          </p>
+          <p>
+            Our mission is simple: <em>provide premium yet affordable handmade treasures that make gifting extraordinary.</em>
+          </p>
+        </div>
+      </div>
+
+      <!-- Brand Pillars -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+        <div class="p-6 bg-white rounded-2xl border border-pink-100 shadow-sm">
+          <span class="text-3xl">🌸</span>
+          <h4 class="font-serif font-bold text-gray-900 text-base mt-2">Everlasting Blooms</h4>
+          <p class="text-xs text-gray-500 mt-1">Bouquets and flowers that never dry, wilt, or lose their vibrant colors.</p>
+        </div>
+        <div class="p-6 bg-white rounded-2xl border border-pink-100 shadow-sm">
+          <span class="text-3xl">🎨</span>
+          <h4 class="font-serif font-bold text-gray-900 text-base mt-2">Personalized Touch</h4>
+          <p class="text-xs text-gray-500 mt-1">Custom color palettes, personalized letters, and tailor-made bundles.</p>
+        </div>
+        <div class="p-6 bg-white rounded-2xl border border-pink-100 shadow-sm">
+          <span class="text-3xl">🤝</span>
+          <h4 class="font-serif font-bold text-gray-900 text-base mt-2">Trusted Handmade</h4>
+          <p class="text-xs text-gray-500 mt-1">Honest Indian craftsmanship, direct artisan care, and genuine support.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       PAGE 6: CONTACT US (#/contact)
+       ========================================================================= -->
+  <main id="pageContact" class="page-view hidden flex-grow py-12 px-4 bg-[#fffdfa]">
+    <div class="container mx-auto max-w-4xl">
+      
+      <div class="text-center max-w-xl mx-auto mb-10">
+        <span class="craft-tag">We'd Love To Hear From You</span>
+        <h1 class="font-serif text-3xl md:text-5xl font-bold text-gray-900 mt-2">Contact Us</h1>
+        <p class="text-sm text-gray-600 mt-2">Have a question about an order, custom crafts, or bulk festive inquiries? Reach out!</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+        
+        <!-- Contact Information -->
+        <div class="md:col-span-5 space-y-4">
+          <div class="p-6 bg-white rounded-2xl border border-pink-200 shadow-sm space-y-4">
+            <h3 class="font-serif text-lg font-bold text-gray-900">Direct Connect</h3>
+            
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-lg">
+                📷
+              </div>
+              <div>
+                <span class="block text-xs text-gray-400">Instagram Handle</span>
+                <a href="https://instagram.com/vision_thread00" target="_blank" class="text-sm font-bold text-pink-600 hover:underline">@vision_thread00</a>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg">
+                ✉️
+              </div>
+              <div>
+                <span class="block text-xs text-gray-400">Email Address</span>
+                <span class="text-sm font-bold text-gray-800">support@visionthread.in</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fast FAQ Box -->
+          <div class="p-5 bg-pink-50/70 rounded-2xl border border-pink-100 text-xs text-gray-600 space-y-2">
+            <p><strong>Shipping Time:</strong> Dispatched in 2-3 business days. Delivery within 4-6 business days pan-India.</p>
+            <p><strong>Urgent Orders:</strong> Direct message us on Instagram (@vision_thread00) for expedited express crafting.</p>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="md:col-span-7 bg-white p-6 md:p-8 rounded-3xl border border-pink-200 shadow-soft">
+          <form onsubmit="app.handleContactSubmit(event)" class="space-y-4" id="contactUsForm">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Your Name</label>
+              <input type="text" name="contactName" required placeholder="Enter your full name" 
+                class="w-full text-xs px-3.5 py-2.5 bg-pink-50/40 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Mobile / WhatsApp Number</label>
+              <input type="tel" name="contactMobile" required placeholder="10-digit mobile number" 
+                class="w-full text-xs px-3.5 py-2.5 bg-pink-50/40 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Your Message</label>
+              <textarea name="contactMessage" rows="4" required placeholder="How can we assist you with our handmade crafts?" 
+                class="w-full text-xs px-3.5 py-2.5 bg-pink-50/40 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500"></textarea>
+            </div>
+            <button type="submit" class="btn-primary w-full py-3 text-xs">
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       PAGE 7: FULL CART PAGE (#/cart)
+       ========================================================================= -->
+  <main id="pageCart" class="page-view hidden flex-grow py-10 px-4 bg-[#fffdfa]">
+    <div class="container mx-auto max-w-5xl">
+      <div class="mb-6">
+        <h1 class="font-serif text-3xl font-bold text-gray-900">Shopping Cart 🧺</h1>
+        <p class="text-xs text-gray-500 mt-1">Review your selected handmade treasures before proceeding to checkout.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Cart Items List -->
+        <div id="fullCartItemsContainer" class="lg:col-span-8">
+          <!-- Rendered by app.renderFullCartPage() -->
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <div id="fullCartSummary" class="lg:col-span-4">
+          <div class="bg-white p-6 rounded-3xl border border-pink-200 shadow-soft sticky top-24 space-y-4">
+            <h3 class="font-serif text-lg font-bold text-gray-900 pb-2 border-b border-pink-100">Order Summary</h3>
+
+            <!-- Coupon Box -->
+            <div class="flex gap-2">
+              <input type="text" id="couponCodeInput" placeholder="Promo code (e.g. HANDMADE10)" 
+                class="w-full text-xs uppercase px-3 py-2 bg-pink-50 border border-pink-200 rounded-lg focus:outline-none focus:border-pink-500 font-mono" />
+              <button onclick="app.applyCoupon()" class="px-3 py-2 text-xs font-semibold bg-gray-900 text-white rounded-lg hover:bg-black transition-colors whitespace-nowrap">
+                Apply
+              </button>
+            </div>
+
+            <!-- Price Breakdown -->
+            <div class="space-y-2 text-xs text-gray-600 pt-2 border-t border-pink-50">
+              <div class="flex justify-between">
+                <span>Subtotal</span>
+                <span id="fullCartSubtotal" class="font-bold text-gray-900">₹0</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Delivery Charges</span>
+                <span id="fullCartDelivery" class="font-bold text-gray-900">₹0</span>
+              </div>
+              <div class="flex justify-between text-emerald-600">
+                <span>Coupon Discount</span>
+                <span id="fullCartDiscount" class="font-bold">₹0</span>
+              </div>
+              <div class="flex justify-between text-base font-bold text-gray-900 pt-3 border-t border-pink-100">
+                <span>Total Amount</span>
+                <span id="fullCartTotal" class="text-pink-600 font-sans">₹0</span>
+              </div>
+            </div>
+
+            <p class="text-[11px] text-gray-400 text-center">Inclusive of all taxes & hand-packing</p>
+
+            <div class="space-y-2">
+              <a href="#/checkout" class="btn-primary w-full py-3 text-center text-sm block">
+                Place Order via Instagram →
+              </a>
+              <button type="button" onclick="app.orderViaInstagramFromCart()" class="btn-instagram w-full py-3 text-center text-xs flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                <span>Order Cart via Instagram DM</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       PAGE 8: SIMPLE ORDER FORM (#/checkout)
+       Direct Instagram DM Ordering with Customer & Delivery Details
+       ========================================================================= -->
+  <main id="pageCheckout" class="page-view hidden flex-grow py-10 px-4 bg-[#fffdfa]">
+    <div class="container mx-auto max-w-4xl">
+      <div class="mb-6 text-center md:text-left">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-semibold mb-2">
+          <span>🌸</span> Handcrafted with Love • @vision_thread00
+        </div>
+        <h1 class="font-serif text-3xl font-bold text-gray-900">Place Your Order 🛍️</h1>
+        <p class="text-xs text-gray-500 mt-1">Enter your delivery details below to order directly via Instagram DM.</p>
+      </div>
+
+      <form id="simpleOrderForm" onsubmit="app.handleSimpleOrderSubmit(event)">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          <!-- Simple Order Form Fields (Exact 4 fields requested) -->
+          <div class="lg:col-span-7 space-y-6">
+            <div class="bg-white p-6 md:p-8 rounded-3xl border border-pink-200 shadow-soft space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-pink-100">
+                <h3 class="font-serif text-lg font-bold text-gray-900">Delivery Details</h3>
+                <span class="text-[11px] text-pink-600 font-medium">All 4 fields required</span>
+              </div>
+
+              <!-- Field 1: Customer Name -->
+              <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Customer Name *</label>
+                <input type="text" name="customerName" id="orderCustomerName" required placeholder="Enter your full name" 
+                  class="w-full text-sm px-4 py-3 bg-pink-50/30 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500 focus:bg-white transition-colors" />
+              </div>
+
+              <!-- Field 2: Phone Number -->
+              <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Phone Number *</label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-500">+91</span>
+                  <input type="tel" name="customerPhone" id="orderCustomerPhone" required placeholder="10-digit mobile number" maxlength="14"
+                    class="w-full text-sm pl-12 pr-4 py-3 bg-pink-50/30 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500 focus:bg-white transition-colors" />
+                </div>
+              </div>
+
+              <!-- Field 3: Full Address -->
+              <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Full Address *</label>
+                <textarea name="customerAddress" id="orderCustomerAddress" rows="3" required placeholder="House / Flat No., Building, Street Name, Area, City" 
+                  class="w-full text-sm px-4 py-3 bg-pink-50/30 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500 focus:bg-white transition-colors"></textarea>
+              </div>
+
+              <!-- Field 4: PIN Code -->
+              <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">PIN Code *</label>
+                <input type="text" name="customerPincode" id="orderCustomerPincode" required placeholder="6-digit postal PIN code" maxlength="6" pattern="[0-9]{6}"
+                  class="w-full text-sm px-4 py-3 bg-pink-50/30 border border-pink-200 rounded-xl focus:outline-none focus:border-pink-500 focus:bg-white transition-colors" />
+              </div>
+
+              <!-- Instagram Ordering Notice -->
+              <div class="p-3.5 bg-gradient-to-r from-pink-50 via-rose-50 to-amber-50 border border-pink-200 rounded-2xl flex items-start gap-3">
+                <span class="text-xl">📸</span>
+                <div class="text-xs text-gray-600">
+                  <strong class="text-gray-900 block font-semibold mb-0.5">Direct Instagram DM Ordering (@vision_thread00)</strong>
+                  Your order details will be saved to our database and formatted ready to send in Instagram DM for instant confirmation.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selected Product Summary Box -->
+          <div class="lg:col-span-5">
+            <div class="bg-white p-6 rounded-3xl border border-pink-200 shadow-soft sticky top-24 space-y-4">
+              <h3 class="font-serif text-lg font-bold text-gray-900 pb-2 border-b border-pink-100 flex items-center justify-between">
+                <span>Selected Items</span>
+                <span id="orderItemCountBadge" class="text-xs font-normal text-pink-600 font-sans">0 items</span>
+              </h3>
+
+              <!-- Items in order -->
+              <div id="checkoutOrderItems" class="max-h-64 overflow-y-auto space-y-2.5 pr-1 divide-y divide-pink-50">
+                <!-- Populated dynamically -->
+              </div>
+
+              <!-- Price breakdown -->
+              <div class="space-y-2 text-xs text-gray-600 pt-3 border-t border-pink-100">
+                <div class="flex justify-between">
+                  <span>Subtotal</span>
+                  <span id="checkoutSubtotal" class="font-bold text-gray-900">₹0</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Delivery</span>
+                  <span id="checkoutDelivery" class="font-bold text-emerald-600">FREE</span>
+                </div>
+                <div class="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t border-pink-100">
+                  <span>Total Amount</span>
+                  <span id="checkoutTotal" class="text-pink-600 font-sans">₹0</span>
+                </div>
+              </div>
+
+              <button type="submit" id="submitOrderBtn" class="btn-instagram w-full py-3.5 text-center text-sm font-bold shadow-lg flex items-center justify-center gap-2">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                <span>Place Order & Open Instagram DM</span>
+              </button>
+
+              <div class="pt-2 text-center text-[10px] text-gray-400 space-y-1">
+                <p>📋 Order details copied automatically to clipboard</p>
+                <p>Opens Instagram DM to @vision_thread00 directly</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       PAGE 9: ORDER CONFIRMATION (#/order-confirmation)
+       ========================================================================= -->
+  <main id="pageConfirmation" class="page-view hidden flex-grow py-12 px-4 bg-[#fffdfa]">
+    <div class="container mx-auto max-w-2xl">
+      <div id="confirmationDetails">
+        <!-- Rendered by app.renderOrderConfirmation() -->
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       SLIDE-OVER DRAWERS (Cart & Wishlist)
+       ========================================================================= -->
+
+  <!-- Cart Slide-Over Drawer -->
+  <div id="cartDrawerBackdrop" class="drawer-backdrop">
+    <div class="drawer-panel p-6 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-4 border-b border-pink-100">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🛍️</span>
+            <h3 class="font-serif font-bold text-gray-900 text-lg">Your Craft Basket</h3>
+          </div>
+          <button onclick="app.closeCartDrawer()" class="p-1 rounded-full text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+        </div>
+
+        <!-- Free Delivery Meter -->
+        <div class="mt-3 p-3 bg-pink-50 rounded-xl text-xs space-y-1.5">
+          <div id="cartFreeShippingText" class="text-gray-700">Add ₹499 for FREE Delivery!</div>
+          <div class="w-full bg-pink-200 h-1.5 rounded-full overflow-hidden">
+            <div id="cartFreeShippingProgress" class="h-full bg-pink-600 w-0 transition-all duration-300"></div>
+          </div>
+        </div>
+
+        <!-- Cart Items List Container -->
+        <div id="cartDrawerItems" class="mt-4 space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+          <!-- Populated by app.renderCartDrawer() -->
+        </div>
+      </div>
+
+      <!-- Drawer Footer & Checkout -->
+      <div class="pt-4 border-t border-pink-100 space-y-3">
+        <div class="space-y-1.5 text-xs text-gray-600">
+          <div class="flex justify-between">
+            <span>Subtotal</span>
+            <span id="cartDrawerSubtotal" class="font-bold text-gray-900">₹0</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Delivery</span>
+            <span id="cartDrawerDelivery" class="font-bold text-gray-900">₹0</span>
+          </div>
+          <div class="flex justify-between text-base font-bold text-gray-900 pt-2 border-t border-pink-50">
+            <span>Total</span>
+            <span id="cartDrawerTotal" class="text-pink-600 font-sans">₹0</span>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="grid grid-cols-2 gap-2">
+            <a href="#/cart" onclick="app.closeCartDrawer()" class="btn-secondary text-xs py-2.5 text-center">
+              View Cart
+            </a>
+            <a href="#/checkout" onclick="app.closeCartDrawer()" class="btn-primary text-xs py-2.5 text-center">
+              Place Order
+            </a>
+          </div>
+          <button type="button" onclick="app.orderViaInstagramFromCart()" class="btn-instagram w-full text-xs py-2.5 text-center flex items-center justify-center gap-2 shadow-md">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            <span>Order via Instagram DM</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wishlist Slide-Over Drawer -->
+  <div id="wishlistDrawerBackdrop" class="drawer-backdrop">
+    <div class="drawer-panel p-6 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-4 border-b border-pink-100">
+          <div class="flex items-center gap-2">
+            <span class="text-xl text-pink-600">❤️</span>
+            <h3 class="font-serif font-bold text-gray-900 text-lg">Saved Favorites</h3>
+          </div>
+          <button onclick="app.closeWishlistDrawer()" class="p-1 rounded-full text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+        </div>
+
+        <div id="wishlistDrawerItems" class="mt-4 space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+          <!-- Populated by app.renderWishlistDrawer() -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 1: PRODUCT DETAILS MODAL (Quick View & Full Details)
+       ========================================================================= -->
+  <div id="productDetailsModal" class="modal-overlay">
+    <div class="modal-box relative">
+      <button onclick="app.closeProductModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-pink-100 hover:bg-pink-200 text-pink-700 flex items-center justify-center font-bold text-lg z-20 transition-colors">
+        ×
+      </button>
+      <div id="productDetailsModalContent">
+        <!-- Rendered by app.openProductDetails() -->
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: ORDER VIA INSTAGRAM (@vision_thread00)
+       ========================================================================= -->
+  <div id="instagramOrderModal" class="modal-overlay">
+    <div class="modal-box max-w-lg p-6 relative">
+      <button onclick="app.closeInstagramOrderModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-pink-100 hover:bg-pink-200 text-pink-700 flex items-center justify-center font-bold text-lg z-20">
+        ×
+      </button>
+
+      <div class="text-center pb-4 border-b border-pink-100">
+        <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 flex items-center justify-center text-white text-2xl shadow-md mb-2">
+          <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </div>
+        <h3 class="font-serif text-xl font-bold text-gray-900">Order via Instagram DM</h3>
+        <p class="text-xs text-pink-600 font-semibold">@vision_thread00</p>
+      </div>
+
+      <div class="py-4 space-y-3">
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-xs text-emerald-800">
+          <span>✅</span>
+          <span class="font-semibold" id="igCopyStatusText">Order details copied to your clipboard!</span>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+            Pre-Filled Order Message:
+          </label>
+          <textarea id="igOrderMessageText" readonly rows="7" 
+            class="w-full text-xs font-mono p-3 bg-gray-50 border border-pink-200 rounded-xl text-gray-800 focus:outline-none focus:bg-white resize-none"></textarea>
+        </div>
+
+        <div class="p-3 bg-pink-50/60 rounded-xl text-xs text-gray-600 space-y-1">
+          <p class="font-bold text-gray-800">👉 How to send your order on Instagram:</p>
+          <p>1. Click <strong>"Open Instagram DM"</strong> below.</p>
+          <p>2. In your Instagram chat with <strong>@vision_thread00</strong>, simply <strong>Paste (Ctrl+V / Long-Press Paste)</strong>.</p>
+          <p>3. Tap send and we will reply to confirm your handmade order!</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2 pt-2">
+          <button onclick="app.copyInstagramMessage()" class="btn-secondary text-xs py-3 flex-1 flex items-center justify-center gap-1.5">
+            <span>📋 Copy Again</span>
+          </button>
+          <a id="igDmLinkBtn" href="https://ig.me/m/vision_thread00" target="_blank" rel="noopener noreferrer" 
+             class="btn-instagram text-xs py-3 flex-1 flex items-center justify-center gap-1.5 shadow-md">
+            <span>Open Instagram DM ↗</span>
+          </a>
+        </div>
+
+        <div class="text-center pt-1">
+          <a href="https://www.instagram.com/vision_thread00/" target="_blank" rel="noopener noreferrer" 
+             class="text-xs text-gray-500 hover:text-pink-600 underline">
+            Or view profile: instagram.com/vision_thread00
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       TOAST NOTIFICATION CONTAINER
+       ========================================================================= -->
+
+  <div id="toastContainer"></div>
+
+  <!-- Printable Receipt (Hidden during normal view) -->
+  <div id="printableReceipt" class="hidden"></div>
+
+  <!-- =========================================================================
+       FOOTER
+       ========================================================================= -->
+  <footer class="bg-white border-t border-pink-100 pt-14 pb-8 px-4 text-gray-600 mt-auto">
+    <div class="container mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+        
+        <!-- Brand Info -->
+        <div class="space-y-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold text-xs">VT</div>
+            <h3 class="font-serif text-xl font-bold text-gray-900">Vision Thread</h3>
+          </div>
+          <p class="text-pink-600 font-serif italic text-sm">“Handmade With Love ❤️”</p>
+          <p class="text-xs text-gray-500 leading-relaxed">
+            Handcrafted flower bouquets, hair ties, festive torans, and personalized gifts made with love and precision in India.
+          </p>
+          <div class="pt-1">
+            <a href="https://instagram.com/vision_thread00" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-pink-600 hover:text-pink-700">
+              <span>📷 Follow @vision_thread00</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h4 class="font-serif text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Explore</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="#/shop" class="hover:text-pink-600 transition-colors">Shop Collection</a></li>
+            <li><a href="#/custom-orders" class="hover:text-pink-600 transition-colors">Custom Orders 💕</a></li>
+            <li><a href="#/about" class="hover:text-pink-600 transition-colors">About Us</a></li>
+            <li><a href="#/contact" class="hover:text-pink-600 transition-colors">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <!-- Categories Links -->
+        <div>
+          <h4 class="font-serif text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Handmade Crafts</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="#/shop" onclick="app.selectCategoryAndShop('Bouquets')" class="hover:text-pink-600 transition-colors">💐 Bouquets</a></li>
+            <li><a href="#/shop" onclick="app.selectCategoryAndShop('Handmade Flowers')" class="hover:text-pink-600 transition-colors">🌸 Handmade Flowers</a></li>
+            <li><a href="#/shop" onclick="app.selectCategoryAndShop('Hair Accessories')" class="hover:text-pink-600 transition-colors">🎀 Hair Accessories</a></li>
+            <li><a href="#/shop" onclick="app.selectCategoryAndShop('Festive Crafts')" class="hover:text-pink-600 transition-colors">🪔 Festive Crafts</a></li>
+          </ul>
+        </div>
+
+        <!-- Policies & Instagram Support -->
+        <div>
+          <h4 class="font-serif text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Customer Care</h4>
+          <ul class="space-y-2 text-xs text-gray-500">
+            <li><a href="#/contact" class="hover:text-pink-600">Privacy Policy</a></li>
+            <li><a href="#/contact" class="hover:text-pink-600">Terms & Conditions</a></li>
+            <li><a href="#/contact" class="hover:text-pink-600">Shipping & Return Policy</a></li>
+            <li><a href="https://www.google.com" target="_blank" rel="noopener noreferrer" class="hover:text-pink-600 flex items-center gap-1 font-medium text-pink-600"><span>🌐 Direct Link: Open Google</span> ↗</a></li>
+            <li class="pt-2">
+              <a href="https://www.instagram.com/vision_thread00/" target="_blank" rel="noopener noreferrer" class="text-pink-600 hover:text-pink-700 font-semibold flex items-center gap-1" title="Instagram @vision_thread00">
+                <span>📸 DM on Instagram (@vision_thread00)</span> ↗
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Copyright & Handmade Note -->
+      <div class="pt-8 border-t border-pink-100 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400 gap-2 text-center sm:text-left">
+        <div>
+          © 2026 <strong>Vision Thread</strong> (@vision_thread00). All rights reserved.
+        </div>
+        <div class="flex items-center gap-1 text-pink-600">
+          <span>Handmade with care & devotion in India</span>
+          <span>❤️</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/products.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

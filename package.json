@@ -1,0 +1,29 @@
+{
+  "name": "vision-thread-ecommerce",
+  "version": "1.0.0",
+  "description": "Modern handmade craft e-commerce website for Vision Thread (@vision_thread00)",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "backend": "node backend/server.js",
+    "backend:dev": "npm --prefix backend run dev",
+    "setup-db": "npm --prefix backend run setup-db",
+    "seed-admin": "npm --prefix backend run seed-admin",
+    "seed-products": "node backend/scripts/seed-products.js",
+    "install-backend": "npm install --prefix backend"
+  },
+  "keywords": [
+    "handmade",
+    "ecommerce",
+    "crafts",
+    "vision-thread",
+    "flowers",
+    "bouquets"
+  ],
+  "author": "Vision Thread (@vision_thread00)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
