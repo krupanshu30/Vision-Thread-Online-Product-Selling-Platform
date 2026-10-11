@@ -69,23 +69,25 @@ app.use("/api/products", productRoutes);
 app.use("/api", orderRoutes);
 
 // ============================================================
+// Serve Static Files, Customer Storefront & Admin Panel
 // ============================================================
-// Serve Admin Panel & Storefront locally (on Vercel, Edge CDN handles this)
-// ============================================================
-if (!process.env.VERCEL) {
-  app.use("/admin", express.static(path.join(__dirname, "admin-panel")));
-  app.get("/admin", (req, res) => {
-    res.sendFile(path.join(__dirname, "admin-panel", "index.html"));
-  });
-  app.get("/admin/*", (req, res) => {
-    res.sendFile(path.join(__dirname, "admin-panel", "index.html"));
-  });
+app.use("/css", express.static(path.join(__dirname, "../css")));
+app.use("/js", express.static(path.join(__dirname, "../js")));
+app.use("/images", express.static(path.join(__dirname, "../images")));
+app.use("/admin/images", express.static(path.join(__dirname, "../images")));
+app.use("/admin", express.static(path.join(__dirname, "admin-panel")));
 
-  app.use(express.static(path.join(__dirname, "..")));
-  app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "..", "index.html"));
-  });
-}
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(__dirname, "admin-panel", "index.html"));
+});
+app.get("/admin/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "admin-panel", "index.html"));
+});
+
+app.use(express.static(path.join(__dirname, "..")));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "index.html"));
+});
 
 // ============================================================
 // Health check

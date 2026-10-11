@@ -1,18 +1,14 @@
 {
   "version": 2,
-  "cleanUrls": true,
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "index.html,css/**,js/**,images/**,backend/admin-panel/**"
+    }
+  },
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/(.*)",
       "destination": "/api/index.js"
-    },
-    {
-      "source": "/admin",
-      "destination": "/backend/admin-panel/index.html"
-    },
-    {
-      "source": "/admin/(.*)",
-      "destination": "/backend/admin-panel/$1"
     }
   ]
 }
