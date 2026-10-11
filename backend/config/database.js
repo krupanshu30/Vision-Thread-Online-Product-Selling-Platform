@@ -13,7 +13,7 @@ const pool = mysql.createPool({
   queueLimit: 0,
   charset: "utf8mb4",
   timezone: "+05:30",
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: true } : false,
+  ssl: (process.env.DB_SSL === "true" || process.env.NODE_ENV === "production") ? { rejectUnauthorized: false } : false,
 });
 
 // Test connection on startup with clear diagnostics

@@ -106,15 +106,20 @@ app.use((err, req, res, next) => {
 });
 
 // ============================================================
-// Start Server
+// Start Server (only when run directly, not when imported as serverless function)
 // ============================================================
-app.listen(PORT, "0.0.0.0", () => {
-  console.log("\n╔══════════════════════════════════════════════════════════╗");
-  console.log("║           Vision Thread Store & Backend Running          ║");
-  console.log("╠══════════════════════════════════════════════════════════╣");
-  console.log("║  Website (This PC):    http://localhost:" + PORT + "               ║");
-  console.log("║  Website (All Devices):http://192.168.1.104:" + PORT + "           ║");
-  console.log("║  Admin Panel:          http://localhost:" + PORT + "/admin         ║");
-  console.log("║  Admin (All Devices):  http://192.168.1.104:" + PORT + "/admin     ║");
-  console.log("╚══════════════════════════════════════════════════════════╝\n");
-});
+if (require.main === module || !process.env.VERCEL) {
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log("\n╔══════════════════════════════════════════════════════════╗");
+    console.log("║           Vision Thread Store & Backend Running          ║");
+    console.log("╠══════════════════════════════════════════════════════════╣");
+    console.log("║  Website (This PC):    http://localhost:" + PORT + "               ║");
+    console.log("║  Website (All Devices):http://192.168.1.104:" + PORT + "           ║");
+    console.log("║  Admin Panel:          http://localhost:" + PORT + "/admin         ║");
+    console.log("║  Admin (All Devices):  http://192.168.1.104:" + PORT + "/admin     ║");
+    console.log("╚══════════════════════════════════════════════════════════╝\n");
+  });
+}
+
+module.exports = app;
+
