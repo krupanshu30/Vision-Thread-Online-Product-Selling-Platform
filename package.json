@@ -2,7 +2,6 @@
   "name": "vision-thread-ecommerce",
   "version": "1.0.0",
   "description": "Modern handmade craft e-commerce website for Vision Thread (@vision_thread00)",
-  "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
     "dev": "node backend/server.js",

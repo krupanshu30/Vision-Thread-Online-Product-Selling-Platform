@@ -10,9 +10,13 @@ const { authenticateAdmin } = require("../middleware/auth");
 const router = express.Router();
 
 // Upload setup for product images
-const uploadsDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+const uploadsDir = process.env.VERCEL ? path.join("/tmp", "uploads") : path.join(__dirname, "../uploads");
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (e) {
+  // Gracefully ignore on read-only environments
 }
 
 const storage = multer.diskStorage({

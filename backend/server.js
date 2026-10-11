@@ -14,9 +14,13 @@ const PORT = process.env.PORT || 5000;
 // ============================================================
 // Uploads and Static Assets
 // ============================================================
-const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+const uploadsDir = process.env.VERCEL ? path.join("/tmp", "uploads") : path.join(__dirname, "uploads");
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (e) {
+  // Gracefully ignore on read-only environments
 }
 app.use("/uploads", express.static(uploadsDir));
 app.use("/images", express.static(path.join(__dirname, "../images")));
@@ -65,23 +69,23 @@ app.use("/api/products", productRoutes);
 app.use("/api", orderRoutes);
 
 // ============================================================
-// Serve Admin Panel (HTML) - at /admin path
 // ============================================================
-app.use("/admin", express.static(path.join(__dirname, "admin-panel")));
-app.get("/admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "admin-panel", "index.html"));
-});
-app.get("/admin/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "admin-panel", "index.html"));
-});
+// Serve Admin Panel & Storefront locally (on Vercel, Edge CDN handles this)
+// ============================================================
+if (!process.env.VERCEL) {
+  app.use("/admin", express.static(path.join(__dirname, "admin-panel")));
+  app.get("/admin", (req, res) => {
+    res.sendFile(path.join(__dirname, "admin-panel", "index.html"));
+  });
+  app.get("/admin/*", (req, res) => {
+    res.sendFile(path.join(__dirname, "admin-panel", "index.html"));
+  });
 
-// ============================================================
-// Serve Customer Store Website (Frontend) - at root /
-// ============================================================
-app.use(express.static(path.join(__dirname, "..")));
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "index.html"));
-});
+  app.use(express.static(path.join(__dirname, "..")));
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "index.html"));
+  });
+}
 
 // ============================================================
 // Health check
