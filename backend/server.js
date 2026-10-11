@@ -106,9 +106,9 @@ app.use((err, req, res, next) => {
 });
 
 // ============================================================
-// Start Server (only when run directly, not when imported as serverless function)
+// Start Server (only when run directly: node backend/server.js)
 // ============================================================
-if (require.main === module || !process.env.VERCEL) {
+if (require.main === module) {
   app.listen(PORT, "0.0.0.0", () => {
     console.log("\n╔══════════════════════════════════════════════════════════╗");
     console.log("║           Vision Thread Store & Backend Running          ║");
