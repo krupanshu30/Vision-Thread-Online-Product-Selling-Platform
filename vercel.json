@@ -2,7 +2,8 @@
   "version": 2,
   "functions": {
     "api/index.js": {
-      "includeFiles": "index.html,css/**,js/**,images/**,backend/admin-panel/**"
+      "maxDuration": 30,
+      "includeFiles": "index.html,css/**,js/**,images/**,backend/**"
     }
   },
   "rewrites": [
