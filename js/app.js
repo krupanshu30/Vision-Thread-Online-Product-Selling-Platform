@@ -21,11 +21,33 @@ class VisionThreadApp {
     this.appliedCoupon = null;
 
     // Dynamic API URL adapts to current host (localhost, local IP, or domain)
-    this.apiBase = window.location.protocol.startsWith('http')
-      ? `${window.location.origin}/api`
+    this.apiBase = (typeof window.getVtApiBase === 'function')
+      ? window.getVtApiBase()
       : 'http://localhost:5000/api';
+    this.backendOrigin = this.apiBase.replace(/\/api\/?$/, '');
 
     this.init();
+  }
+
+  resolveImageUrl(imgUrl) {
+    if (!imgUrl || typeof imgUrl !== 'string') return 'images/pink-purple-lily-bouquet.jpg';
+    const trimmed = imgUrl.trim();
+    if (!trimmed) return 'images/pink-purple-lily-bouquet.jpg';
+
+    // If it's a relative path starting with /uploads/
+    if (trimmed.startsWith('/uploads/')) {
+      const backendOrigin = this.apiBase ? this.apiBase.replace(/\/api\/?$/, '') : (window.location.origin || '');
+      return `${backendOrigin}${trimmed}`;
+    }
+
+    // If it contains localhost:5000/uploads/ but we are running on a mobile / LAN host or custom domain
+    if (trimmed.includes('localhost:5000/uploads/')) {
+      const parts = trimmed.split('/uploads/');
+      const backendOrigin = this.apiBase ? this.apiBase.replace(/\/api\/?$/, '') : (window.location.origin || '');
+      return `${backendOrigin}/uploads/${parts[1]}`;
+    }
+
+    return trimmed;
   }
 
   init() {
@@ -37,8 +59,91 @@ class VisionThreadApp {
     this.updateWishlistBadge();
     this.renderInstagramGrid();
 
+    // Listen for product sync from backend
+    window.addEventListener('vt:products-synced', () => {
+      this.onProductsSynced();
+    });
+
+    window.addEventListener('vt:catalog-updated', () => {
+      this.onProductsSynced();
+    });
+
+    // Cross-tab / cross-window sync listener
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'vt_catalog_sync' || e.key === 'vision_thread_products') {
+        if (window.productStore && typeof window.productStore.syncWithBackend === 'function') {
+          window.productStore.syncWithBackend(true);
+        }
+      }
+    });
+
+    // Mobile visibilitychange & pageshow (vital for iOS Safari and Android Chrome)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        if (window.productStore && typeof window.productStore.syncWithBackend === 'function') {
+          window.productStore.syncWithBackend(true);
+        }
+        this.syncOfflineOrders();
+      }
+    });
+
+    window.addEventListener('pageshow', () => {
+      if (window.productStore && typeof window.productStore.syncWithBackend === 'function') {
+        window.productStore.syncWithBackend(true);
+      }
+      this.syncOfflineOrders();
+    });
+
+    // When tab/window regains focus, immediately sync products and offline orders
+    window.addEventListener('focus', () => {
+      if (window.productStore && typeof window.productStore.syncWithBackend === 'function') {
+        window.productStore.syncWithBackend(true);
+      }
+      this.syncOfflineOrders();
+    });
+
+    window.addEventListener('online', () => {
+      if (window.productStore && typeof window.productStore.syncWithBackend === 'function') {
+        window.productStore.syncWithBackend(true);
+      }
+      this.syncOfflineOrders();
+    });
+
+    // Periodic lightweight background sync every 6 seconds to detect admin edits in real-time
+    this.syncInterval = setInterval(() => {
+      if (window.productStore && typeof window.productStore.checkCatalogVersion === 'function') {
+        window.productStore.checkCatalogVersion();
+      }
+    }, 6000);
+
+    // Proactively sync products from backend now that app is initialized
+    if (window.productStore && typeof window.productStore.syncWithBackend === 'function') {
+      window.productStore.syncWithBackend(true);
+    }
+
+    // Sync any orders stored offline
+    this.syncOfflineOrders();
+
     // Check if URL has hash
     window.addEventListener('hashchange', () => this.handleRoute());
+  }
+
+  onProductsSynced() {
+    this.renderCategories();
+    this.renderProducts();
+    this.renderShopProducts();
+
+    // If product details modal is currently open, refresh with updated data
+    if (this.selectedProduct && this.selectedProduct.id) {
+      const updated = window.productStore ? window.productStore.getById(this.selectedProduct.id) : null;
+      if (updated) {
+        this.selectedProduct = updated;
+        const modal = document.getElementById('productDetailsModal');
+        if (modal && !modal.classList.contains('hidden')) {
+          this.openProductDetails(updated.id);
+        }
+      }
+    }
   }
 
   /* -------------------------------------------------------------
@@ -46,6 +151,9 @@ class VisionThreadApp {
   ------------------------------------------------------------- */
   handleRoute() {
     const hash = window.location.hash || '#/';
+    if (window.productStore && typeof window.productStore.syncWithBackend === 'function') {
+      window.productStore.syncWithBackend();
+    }
     const pages = document.querySelectorAll('.page-view');
     pages.forEach(p => p.classList.add('hidden'));
 
@@ -260,24 +368,28 @@ class VisionThreadApp {
     const container = document.getElementById('categoriesGrid');
     if (!container) return;
 
-    const cats = window.PRODUCT_CATEGORIES.filter(c => c.id !== 'all');
+    const catsWithCounts = (window.productStore && typeof window.productStore.getCategories === 'function')
+      ? window.productStore.getCategories()
+      : window.PRODUCT_CATEGORIES;
+
+    const cats = catsWithCounts.filter(c => c.id !== 'all');
     container.innerHTML = cats.map(cat => `
       <div class="category-card cursor-pointer group" onclick="app.selectCategoryAndShop('${cat.id}')">
         <div class="w-16 h-16 rounded-full bg-pink-50 border border-pink-200 flex items-center justify-center text-3xl mb-3 shadow-inner group-hover:scale-110 transition-transform">
           ${cat.icon}
         </div>
         <h4 class="font-serif font-bold text-gray-800 text-sm md:text-base group-hover:text-pink-600 transition-colors">${cat.name}</h4>
-        <p class="text-xs text-pink-500 font-medium mt-1">Explore Items →</p>
+        <p class="text-xs text-pink-500 font-medium mt-1">${cat.count || 0} Crafts →</p>
       </div>
     `).join('');
 
     // Also populate shop category pill buttons
     const shopPills = document.getElementById('shopCategoryPills');
     if (shopPills) {
-      shopPills.innerHTML = window.PRODUCT_CATEGORIES.map(c => `
+      shopPills.innerHTML = catsWithCounts.map(c => `
         <button onclick="app.filterByShopCategory('${c.id}')" 
-          class="category-pill whitespace-nowrap px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all ${this.currentCategory === c.id ? 'bg-pink-600 text-white shadow-md' : 'bg-white border border-pink-200 text-gray-700 hover:border-pink-500'}">
-          ${c.icon} ${c.name}
+          class="category-pill whitespace-nowrap px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all ${this.currentCategory.toLowerCase() === c.id.toLowerCase() ? 'bg-pink-600 text-white shadow-md' : 'bg-white border border-pink-200 text-gray-700 hover:border-pink-500'}">
+          ${c.icon} ${c.name} (${c.count || 0})
         </button>
       `).join('');
     }
@@ -375,16 +487,18 @@ class VisionThreadApp {
   createProductCardHtml(p) {
     const isWishlisted = this.wishlist.includes(p.id);
     const discount = p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
+    const inStock = p.inStock !== false;
+    const resolvedImg = this.resolveImageUrl(p.image);
 
     return `
-      <div class="product-card group" data-product-id="${p.id}">
+      <div class="product-card group ${!inStock ? 'opacity-90' : ''}" data-product-id="${p.id}">
         <!-- Image Container -->
         <div class="product-image-wrap">
-          <img src="${p.image}" alt="${p.name}" loading="lazy" />
+          <img src="${resolvedImg}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='images/pink-purple-lily-bouquet.jpg'" />
           
           <!-- Badges -->
-          <div class="card-badge">
-            ${p.badge || 'Handmade'}
+          <div class="card-badge ${!inStock ? '!bg-gray-800 !text-white' : ''}">
+            ${!inStock ? 'Out of Stock' : (p.badge || 'Handmade')}
           </div>
 
           <!-- Wishlist Button -->
@@ -400,12 +514,15 @@ class VisionThreadApp {
         <!-- Product Content -->
         <div class="p-3 md:p-4 flex flex-col flex-grow justify-between">
           <div>
-            <span class="text-[10px] md:text-xs font-semibold text-pink-600 uppercase tracking-wider">${p.category}</span>
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] md:text-xs font-semibold text-pink-600 uppercase tracking-wider">${p.category}</span>
+              ${!inStock ? `<span class="text-[10px] text-rose-600 font-bold bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">Sold Out</span>` : ''}
+            </div>
             <h3 class="font-serif font-bold text-gray-900 text-sm md:text-base leading-snug mt-0.5 line-clamp-1 group-hover:text-pink-600 transition-colors cursor-pointer" onclick="app.openProductDetails('${p.id}')">
               ${p.name}
             </h3>
             <p class="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed hidden sm:block">
-              ${p.shortDescription}
+              ${p.shortDescription || ''}
             </p>
           </div>
 
@@ -427,11 +544,18 @@ class VisionThreadApp {
                 class="px-2 py-1.5 text-xs font-semibold text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-lg transition-colors border border-pink-200 text-center flex items-center justify-center">
                 View
               </button>
-              <button onclick="app.addToCart('${p.id}')" 
-                class="px-2 py-1.5 text-xs font-semibold text-white bg-pink-600 hover:bg-pink-700 rounded-lg transition-all shadow-sm flex items-center justify-center gap-1 active:scale-95">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                <span>Add</span>
-              </button>
+              ${inStock ? `
+                <button onclick="app.addToCart('${p.id}')" 
+                  class="px-2 py-1.5 text-xs font-semibold text-white bg-pink-600 hover:bg-pink-700 rounded-lg transition-all shadow-sm flex items-center justify-center gap-1 active:scale-95">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                  <span>Add</span>
+                </button>
+              ` : `
+                <button disabled 
+                  class="px-2 py-1.5 text-xs font-semibold text-gray-400 bg-gray-100 rounded-lg cursor-not-allowed border border-gray-200 text-center flex items-center justify-center">
+                  Sold Out
+                </button>
+              `}
             </div>
           </div>
         </div>
@@ -469,20 +593,22 @@ class VisionThreadApp {
     let selectedColor = product.colors && product.colors.length ? product.colors[0] : 'Standard';
     let currentQty = 1;
 
-    const gallery = product.gallery && product.gallery.length ? product.gallery : [product.image];
+    const rawGallery = product.gallery && product.gallery.length ? product.gallery : [product.image];
+    const gallery = rawGallery.map(img => this.resolveImageUrl(img));
+    const inStock = product.inStock !== false;
 
     content.innerHTML = `
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
         <!-- Gallery Section -->
         <div>
           <div class="rounded-2xl overflow-hidden aspect-square bg-pink-50 border border-pink-100 shadow-inner mb-3">
-            <img id="mainProductGalleryImg" src="${gallery[0]}" alt="${product.name}" class="w-full h-full object-cover transition-all duration-300" />
+            <img id="mainProductGalleryImg" src="${gallery[0]}" alt="${product.name}" onerror="this.onerror=null;this.src='images/pink-purple-lily-bouquet.jpg'" class="w-full h-full object-cover transition-all duration-300" />
           </div>
           <div class="flex gap-2 overflow-x-auto pb-1">
             ${gallery.map((img, idx) => `
               <button onclick="document.getElementById('mainProductGalleryImg').src = '${img}'" 
                 class="w-16 h-16 rounded-xl overflow-hidden border-2 border-pink-200 hover:border-pink-600 flex-shrink-0 transition-colors">
-                <img src="${img}" alt="Thumbnail" class="w-full h-full object-cover" />
+                <img src="${img}" alt="Thumbnail" onerror="this.onerror=null;this.src='images/pink-purple-lily-bouquet.jpg'" class="w-full h-full object-cover" />
               </button>
             `).join('')}
           </div>
@@ -493,7 +619,9 @@ class VisionThreadApp {
           <div>
             <div class="flex items-center justify-between">
               <span class="craft-tag">🌸 ${product.category}</span>
-              <span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">In Stock • Handmade</span>
+              ${inStock 
+                ? '<span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">In Stock • Handmade</span>' 
+                : '<span class="text-xs text-rose-600 font-semibold bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200">Out of Stock</span>'}
             </div>
 
             <h2 class="font-serif text-2xl font-bold text-gray-900 mt-2">${product.name}</h2>
@@ -561,12 +689,21 @@ class VisionThreadApp {
           <!-- Buttons -->
           <div class="mt-6 flex flex-col gap-2 pt-4 border-t border-gray-100">
             <div class="grid grid-cols-2 gap-3">
-              <button onclick="app.addCurrentDetailToCart()" class="btn-primary w-full py-3 text-sm">
-                Add to Cart
-              </button>
-              <button onclick="app.buyNowDetail()" class="bg-gray-900 hover:bg-black text-white font-semibold py-3 px-4 rounded-full transition-all text-sm flex items-center justify-center shadow-md">
-                Buy Now ⚡
-              </button>
+              ${inStock ? `
+                <button onclick="app.addCurrentDetailToCart()" class="btn-primary w-full py-3 text-sm">
+                  Add to Cart
+                </button>
+                <button onclick="app.buyNowDetail()" class="bg-gray-900 hover:bg-black text-white font-semibold py-3 px-4 rounded-full transition-all text-sm flex items-center justify-center shadow-md">
+                  Buy Now ⚡
+                </button>
+              ` : `
+                <button disabled class="btn-primary w-full py-3 text-sm opacity-50 cursor-not-allowed">
+                  Sold Out
+                </button>
+                <button disabled class="bg-gray-400 text-white font-semibold py-3 px-4 rounded-full transition-all text-sm flex items-center justify-center opacity-60 cursor-not-allowed">
+                  Unavailable
+                </button>
+              `}
             </div>
 
             <!-- Order via Instagram DM Button -->
@@ -999,6 +1136,7 @@ class VisionThreadApp {
 
     const total = this.getOrderSubtotal();
     let orderId = '#VT-' + Math.floor(10000 + Math.random() * 90000);
+    let orderSynced = false;
 
     // Save directly to MySQL database via Backend API
     try {
@@ -1006,8 +1144,9 @@ class VisionThreadApp {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          orderId: orderId,
           customerName: name,
-          customerMobile: phone,
+          customerMobile: cleanPhone.slice(-10),
           address: address,
           pincode: pincode,
           paymentMethod: 'Instagram DM (@vision_thread00)',
@@ -1029,8 +1168,9 @@ class VisionThreadApp {
       });
 
       const resData = await apiRes.json();
-      if (resData.success && resData.orderId) {
-        orderId = resData.orderId;
+      if (resData && resData.success) {
+        if (resData.orderId) orderId = resData.orderId;
+        orderSynced = true;
       }
     } catch (err) {
       console.warn('Backend order sync fallback:', err.message);
@@ -1074,10 +1214,11 @@ class VisionThreadApp {
     const orderRecord = {
       orderId,
       date: new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      customer: { name, phone, address, pincode },
+      customer: { name, phone: cleanPhone.slice(-10), address, pincode },
       items: [...items],
       total,
-      status: 'Pending'
+      status: 'Pending',
+      synced: orderSynced
     };
     const savedOrders = JSON.parse(localStorage.getItem(this.ordersKey) || '[]');
     savedOrders.unshift(orderRecord);
@@ -1106,6 +1247,68 @@ class VisionThreadApp {
 
   handleCheckoutSubmit(e) {
     return this.handleSimpleOrderSubmit(e);
+  }
+
+  /* -------------------------------------------------------------
+     Sync Offline/Locally Stored Orders to MySQL Backend
+  ------------------------------------------------------------- */
+  async syncOfflineOrders() {
+    try {
+      const raw = localStorage.getItem(this.ordersKey);
+      if (!raw) return;
+      const orders = JSON.parse(raw);
+      if (!Array.isArray(orders) || orders.length === 0) return;
+
+      let changed = false;
+      for (const ord of orders) {
+        if (ord.synced) continue; // Already confirmed in MySQL
+
+        try {
+          const apiRes = await fetch(`${this.apiBase}/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: ord.orderId,
+              customerName: ord.customer?.name || ord.customerName || 'Customer',
+              customerMobile: ((ord.customer?.phone || ord.customerPhone || '').replace(/\D/g, '')).slice(-10) || '9876543210',
+              address: ord.customer?.address || ord.address || 'Address',
+              pincode: ord.customer?.pincode || ord.pincode || '400001',
+              paymentMethod: ord.paymentMethod || 'Instagram DM (@vision_thread00)',
+              subtotal: ord.total || ord.subtotal || 0,
+              deliveryCharge: 0,
+              discount: 0,
+              grandTotal: ord.total || ord.grandTotal || 0,
+              items: (ord.items || []).map(i => ({
+                productCode: (i.product && i.product.id) || i.productCode || '',
+                name: (i.product && i.product.name) || i.name || 'Product',
+                category: (i.product && i.product.category) || i.category || 'Handmade',
+                price: (i.product && i.product.price) || i.price || 0,
+                quantity: i.quantity || 1,
+                color: i.selectedColor || i.color || 'Standard',
+                customNote: i.customNote || '',
+                image: (i.product && i.product.image) || i.image || ''
+              }))
+            })
+          });
+
+          if (apiRes.ok) {
+            const resData = await apiRes.json();
+            if (resData && resData.success) {
+              ord.synced = true;
+              changed = true;
+            }
+          }
+        } catch (postErr) {
+          // Will retry next time
+        }
+      }
+
+      if (changed) {
+        localStorage.setItem(this.ordersKey, JSON.stringify(orders));
+      }
+    } catch (e) {
+      console.warn('Sync offline orders error:', e);
+    }
   }
 
   /* -------------------------------------------------------------

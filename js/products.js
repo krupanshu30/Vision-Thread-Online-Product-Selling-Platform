@@ -306,57 +306,129 @@ const DEFAULT_PRODUCTS = [
   }
 ];
 
+window.getVtApiBase = function() {
+  if (typeof window === 'undefined' || !window.location) return 'http://localhost:5000/api';
+  if (window.VISION_THREAD_API_BASE) return window.VISION_THREAD_API_BASE;
+  const customBase = localStorage.getItem('vt_api_base');
+  if (customBase) return customBase.replace(/\/+$/, '');
+
+  const proto = window.location.protocol;
+  const host = window.location.hostname;
+  const port = window.location.port;
+
+  if (proto === 'file:') return 'http://localhost:5000/api';
+  if (port === '5000') return '/api';
+  if (host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0') return `${proto}//${host}:5000/api`;
+  if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host)) return `${proto}//${host}:5000/api`;
+  return `${window.location.origin}/api`;
+};
+
 class ProductStore {
   constructor() {
     this.storageKey = 'vision_thread_products';
+    this.catalogVersion = '';
+    this.lastSyncedAt = 0;
+    this.isSyncing = false;
     this.init();
   }
 
   init() {
     const savedVersion = localStorage.getItem(this.storageKey + '_version');
     const saved = localStorage.getItem(this.storageKey);
-    // Reset if version mismatch (product data was updated in source)
-    if (!saved || savedVersion !== DATA_VERSION) {
-      this.products = [...DEFAULT_PRODUCTS];
-      this.save();
-    } else {
+    this.catalogVersion = localStorage.getItem(this.storageKey + '_catalog_version') || '';
+
+    if (saved) {
       try {
-        this.products = JSON.parse(saved);
-        // Ensure default items exist if empty
-        if (!Array.isArray(this.products) || this.products.length === 0) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.products = parsed;
+        } else {
           this.products = [...DEFAULT_PRODUCTS];
-          this.save();
         }
       } catch (e) {
-        console.error('Failed to parse stored products, falling back to defaults', e);
         this.products = [...DEFAULT_PRODUCTS];
-        this.save();
       }
+    } else {
+      this.products = [...DEFAULT_PRODUCTS];
+      this.save();
     }
-    this.syncWithBackend();
+
+    // Immediately sync with database on startup
+    this.syncWithBackend(true);
   }
 
-  async syncWithBackend() {
+  async syncWithBackend(forceRefresh = false) {
+    if (this.isSyncing && !forceRefresh) return;
+    this.isSyncing = true;
+
     try {
-      const res = await fetch('http://localhost:5000/api/products');
-      if (!res.ok) return;
+      const apiBase = window.getVtApiBase();
+      const res = await fetch(`${apiBase}/products?_t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      });
+
+      if (!res.ok) {
+        this.isSyncing = false;
+        return false;
+      }
+
       const data = await res.json();
-      if (data.success && Array.isArray(data.products) && data.products.length > 0) {
+      if (data.success && Array.isArray(data.products)) {
         this.products = data.products;
+        this.catalogVersion = data.catalogVersion || Date.now().toString(36);
+        this.lastSyncedAt = Date.now();
         this.save();
-        if (window.app && typeof window.app.renderProducts === 'function') {
+
+        // Broadcast global update event so any active component refreshes instantly
+        try {
+          window.dispatchEvent(new CustomEvent('vt:products-synced', { detail: this.products }));
+          window.dispatchEvent(new CustomEvent('vt:catalog-updated', { detail: { count: this.products.length, version: this.catalogVersion } }));
+        } catch (evErr) {}
+
+        if (window.app && typeof window.app.onProductsSynced === 'function') {
+          window.app.onProductsSynced();
+        } else if (window.app && typeof window.app.renderProducts === 'function') {
           window.app.renderProducts();
           window.app.renderShopProducts();
         }
+        this.isSyncing = false;
+        return true;
       }
     } catch (e) {
       // Backend offline: gracefully keep local products
+    } finally {
+      this.isSyncing = false;
     }
+    return false;
+  }
+
+  async checkCatalogVersion() {
+    try {
+      const apiBase = window.getVtApiBase();
+      const res = await fetch(`${apiBase}/products/version?_t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' },
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.success) {
+        if (data.version !== this.catalogVersion || (typeof data.total === 'number' && data.total !== this.products.length)) {
+          await this.syncWithBackend(true);
+        }
+      }
+    } catch (e) {}
   }
 
   save() {
     localStorage.setItem(this.storageKey, JSON.stringify(this.products));
     localStorage.setItem(this.storageKey + '_version', DATA_VERSION);
+    if (this.catalogVersion) {
+      localStorage.setItem(this.storageKey + '_catalog_version', this.catalogVersion);
+    }
   }
 
   getAll() {
@@ -364,12 +436,24 @@ class ProductStore {
   }
 
   getById(id) {
-    return this.products.find(p => p.id === id) || null;
+    if (!id) return null;
+    return this.products.find(p => p.id === id || p.productCode === id || (p.dbId && String(p.dbId) === String(id))) || null;
   }
 
   getByCategory(cat) {
     if (!cat || cat === 'all') return this.getAll();
-    return this.products.filter(p => p.category.toLowerCase() === cat.toLowerCase());
+    return this.products.filter(p => (p.category || '').toLowerCase() === cat.toLowerCase());
+  }
+
+  getCategories() {
+    const all = this.getAll();
+    return CATEGORIES.map(cat => {
+      if (cat.id === 'all') {
+        return { ...cat, count: all.length };
+      }
+      const count = all.filter(p => (p.category || '').toLowerCase() === cat.id.toLowerCase()).length;
+      return { ...cat, count };
+    });
   }
 
   add(product) {
@@ -389,7 +473,7 @@ class ProductStore {
   }
 
   update(id, updatedFields) {
-    const index = this.products.findIndex(p => p.id === id);
+    const index = this.products.findIndex(p => p.id === id || p.productCode === id || (p.dbId && String(p.dbId) === String(id)));
     if (index !== -1) {
       this.products[index] = { ...this.products[index], ...updatedFields };
       this.save();
@@ -399,7 +483,7 @@ class ProductStore {
   }
 
   delete(id) {
-    const index = this.products.findIndex(p => p.id === id);
+    const index = this.products.findIndex(p => p.id === id || p.productCode === id || (p.dbId && String(p.dbId) === String(id)));
     if (index !== -1) {
       const removed = this.products.splice(index, 1)[0];
       this.save();

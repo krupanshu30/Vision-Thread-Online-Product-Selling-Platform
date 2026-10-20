@@ -88,7 +88,6 @@ Double-click [`index.html`](file:///c:/Users/manasi/OneDrive/Documents/krupanshu
 7. **Cart Drawer & Full Cart Page (`#/cart`)**:
    - Slide-over drawer and dedicated cart view
    - Increment, decrement, or remove items
-   - Free shipping progress bar (Free delivery over ₹499!)
    - Coupon discount code box (Try code: `HANDMADE10` or `VISION10` for 10% off)
 
 8. **Secure Checkout (`#/checkout`)**:

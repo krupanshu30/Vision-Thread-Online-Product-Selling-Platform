@@ -28,7 +28,9 @@ router.post(["/", "/orders"], [
   if (!errors.isEmpty()) return res.status(400).json({ success: false, message: errors.array()[0].msg });
 
   const customerName = (req.body.customerName || req.body.name || "").trim();
-  const customerMobile = (req.body.customerMobile || req.body.phone || req.body.customerPhone || "").trim();
+  const rawMobile = (req.body.customerMobile || req.body.phone || req.body.customerPhone || "").trim();
+  const cleanMobile = rawMobile.replace(/\D/g, "");
+  const customerMobile = cleanMobile.length >= 10 ? cleanMobile.slice(-10) : rawMobile.slice(0, 20);
   const address = (req.body.address || req.body.fullAddress || "").trim();
   const pincode = (req.body.pincode || req.body.pinCode || req.body.pin || "").trim();
   const customerEmail = (req.body.customerEmail || req.body.email || "").trim() || null;
@@ -37,7 +39,9 @@ router.post(["/", "/orders"], [
   const paymentMethod = (req.body.paymentMethod || "Instagram DM").trim();
   const { subtotal, deliveryCharge, discount, grandTotal, couponCode, items, notes } = req.body;
 
-  const orderId = "#VT-" + Math.floor(10000 + Math.random() * 90000);
+  const orderId = (req.body.orderId && typeof req.body.orderId === "string" && req.body.orderId.trim())
+    ? req.body.orderId.trim()
+    : "#VT-" + Math.floor(10000 + Math.random() * 90000);
 
   try {
     await db.execute(
@@ -65,6 +69,10 @@ router.post(["/", "/orders"], [
 
     return res.status(201).json({ success: true, message: "Order placed!", orderId });
   } catch (err) {
+    if (err.code === "ER_DUP_ENTRY") {
+      // Order with this ID already registered in MySQL (e.g. offline re-sync)
+      return res.status(200).json({ success: true, message: "Order already registered in system.", orderId });
+    }
     console.error("[ORDERS] Error:", err.message);
     return res.status(500).json({ success: false, message: "Failed to save order. Try again." });
   }
@@ -206,12 +214,26 @@ router.get("/admin/orders", authenticateAdmin, async (req, res) => {
     const { search, status, page = 1, limit = 15 } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
     let sql = "SELECT * FROM orders WHERE 1=1";
+    let countSql = "SELECT COUNT(*) as total FROM orders WHERE 1=1";
     const params = [];
-    if (search) { sql += " AND (order_id LIKE ? OR customer_name LIKE ? OR customer_mobile LIKE ?)"; const q="%" + search + "%"; params.push(q,q,q); }
-    if (status) { sql += " AND status = ?"; params.push(status); }
+    const countParams = [];
+    if (search) {
+      const condition = " AND (order_id LIKE ? OR customer_name LIKE ? OR customer_mobile LIKE ?)";
+      const q = "%" + search + "%";
+      sql += condition;
+      countSql += condition;
+      params.push(q, q, q);
+      countParams.push(q, q, q);
+    }
+    if (status) {
+      sql += " AND status = ?";
+      countSql += " AND status = ?";
+      params.push(status);
+      countParams.push(status);
+    }
     sql += " ORDER BY created_at DESC LIMIT ? OFFSET ?";
     params.push(parseInt(limit), offset);
-    const [[countRow]] = await db.execute("SELECT COUNT(*) as total FROM orders");
+    const [[countRow]] = await db.execute(countSql, countParams);
     const [rows] = await db.execute(sql, params);
     return res.json({ success: true, orders: rows, total: countRow.total, page: parseInt(page), pages: Math.ceil(countRow.total / parseInt(limit)) });
   } catch (err) { return res.status(500).json({ success: false, message: "Error fetching orders." }); }

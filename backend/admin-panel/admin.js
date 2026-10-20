@@ -3,9 +3,18 @@
 // @vision_thread00
 // ============================================================
 
-const API = window.location.protocol.startsWith("http")
-  ? (window.location.origin.includes(":5000") ? "/api" : "http://localhost:5000/api")
-  : "http://localhost:5000/api";
+const API = (function() {
+  if (typeof window === "undefined" || !window.location) return "http://localhost:5000/api";
+  const proto = window.location.protocol;
+  const host = window.location.hostname;
+  const port = window.location.port;
+
+  if (proto === "file:") return "http://localhost:5000/api";
+  if (port === "5000") return "/api";
+  if (host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0") return `${proto}//${host}:5000/api`;
+  if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host)) return `${proto}//${host}:5000/api`;
+  return "/api";
+})();
 let authToken = localStorage.getItem("vt_admin_token") || "";
 let currentPage = { orders: 1, products: 1 };
 let searchTimers = {};
@@ -16,7 +25,7 @@ async function apiCall(method, path, data = null, showErr = true) {
     const opts = {
       method,
       headers: { "Content-Type": "application/json", ...(authToken ? { Authorization: "Bearer " + authToken } : {}) },
-      credentials: "include",
+      ...(window.location.protocol.startsWith("http") ? { credentials: "include" } : {}),
     };
     if (data) opts.body = JSON.stringify(data);
     const res = await fetch(API + path, opts);
@@ -110,6 +119,7 @@ function showSection(name) {
   }[name] || name;
 
   const loaders = {
+    dashboard: loadDashboard,
     orders: loadOrders,
     "custom-orders": loadCustomOrders,
     products: loadProducts,
@@ -364,12 +374,15 @@ async function loadProducts(page = 1) {
     return `
     <tr>
       <td>
-        <div class="product-thumb-container" onclick="openQuickImageModal(${prodId}, '${safeName}', '${encImg}')" title="Click to Change Image">
+        <div class="product-thumb-container" onclick="openQuickImageModal('${prodId}', '${safeName}', '${encImg}')" title="Click to Change Image">
           ${p.image ? `<img src="${p.image}" class="product-thumb" onerror="this.src='';this.alt='🌸'">` : `<div class="product-thumb-placeholder">🌸</div>`}
           <div class="thumb-overlay">Change</div>
         </div>
       </td>
-      <td><strong>${e(p.name)}</strong><br><small style="color:var(--text-light)">${p.productCode}</small></td>
+      <td>
+        <strong class="product-name-link" onclick="editProduct('${prodId}')" title="Click to Update Details">${e(p.name)}</strong>
+        <br><small style="color:var(--text-light)">${p.productCode || p.id}</small>
+      </td>
       <td>${e(p.category)}</td>
       <td><strong>₹${p.price}</strong></td>
       <td>${p.originalPrice ? "₹" + p.originalPrice : "-"}</td>
@@ -377,9 +390,9 @@ async function loadProducts(page = 1) {
       <td>${p.badge ? `<span class="badge badge-pink">${e(p.badge)}</span>` : "-"}</td>
       <td>
         <div class="action-btns">
-          <button class="btn-icon btn-icon-img" onclick="openQuickImageModal(${prodId}, '${safeName}', '${encImg}')" title="Change Image">🖼️</button>
-          <button class="btn-icon btn-icon-edit" onclick="editProduct(${prodId})" title="Edit All Details">✏️</button>
-          <button class="btn-icon btn-icon-delete" onclick="deleteProduct(${prodId})" title="Delete">🗑</button>
+          <button class="btn-action-edit" onclick="editProduct('${prodId}')" title="Update / Edit Product Details">✏️ Update</button>
+          <button class="btn-icon btn-icon-img" onclick="openQuickImageModal('${prodId}', '${safeName}', '${encImg}')" title="Change Image">🖼️</button>
+          <button class="btn-icon btn-icon-delete" onclick="deleteProduct('${prodId}')" title="Delete">🗑</button>
         </div>
       </td>
     </tr>`;
@@ -393,13 +406,16 @@ let productsList = [];
 async function editProduct(id) {
   const { ok, data } = await apiCall("GET", "/products/admin/all?limit=999");
   if (!ok) return;
-  const p = (data.products || []).find(x => (x.dbId && x.dbId == id) || x.id == id);
-  if (!p) return;
-  document.getElementById("productModalTitle").textContent = "Edit Product";
-  document.getElementById("editProductId").value = id;
-  document.getElementById("pName").value = p.name;
-  document.getElementById("pCategory").value = p.category;
-  document.getElementById("pPrice").value = p.price;
+  const p = (data.products || []).find(x => (x.dbId && x.dbId == id) || x.id == id || x.productCode == id);
+  if (!p) {
+    showToast("Product not found", "error");
+    return;
+  }
+  document.getElementById("productModalTitle").textContent = "Update Product: " + (p.name || "");
+  document.getElementById("editProductId").value = p.dbId || p.id;
+  document.getElementById("pName").value = p.name || "";
+  document.getElementById("pCategory").value = p.category || "Bouquets";
+  document.getElementById("pPrice").value = p.price || "";
   document.getElementById("pOriginalPrice").value = p.originalPrice || "";
   document.getElementById("pImage").value = p.image || "";
   document.getElementById("pImageUploadStatus").textContent = "";
@@ -409,9 +425,10 @@ async function editProduct(id) {
   document.getElementById("pFullDesc").value = p.fullDescription || "";
   document.getElementById("pMaterials").value = p.materials || "";
   document.getElementById("pDimensions").value = p.dimensions || "";
-  document.getElementById("pCustomizable").checked = p.customizable;
-  document.getElementById("pInStock").checked = p.inStock;
-  document.getElementById("productSubmitBtn").textContent = "Update Product";
+  document.getElementById("pCustomizable").checked = p.customizable !== false;
+  document.getElementById("pInStock").checked = p.inStock !== false;
+  document.getElementById("productSubmitBtn").textContent = "Save Changes (Update)";
+  document.getElementById("productFormAlert").classList.add("hidden");
   document.getElementById("productModal").classList.remove("hidden");
 }
 
@@ -454,7 +471,7 @@ async function uploadProductImage(fileInput, targetInputId, previewImgId, wrapId
     if (res.ok && json.success) {
       const imgInput = document.getElementById(targetInputId);
       if (imgInput) {
-        imgInput.value = json.imageUrl;
+        imgInput.value = json.relativeUrl || json.imageUrl;
       }
       syncImagePreview(targetInputId, previewImgId, wrapId);
       if (statusEl) {
@@ -550,6 +567,10 @@ async function saveQuickProductImage() {
     showToast("Product image updated successfully!", "success");
     closeQuickImageModal();
     loadProducts(currentPage.products);
+    try {
+      localStorage.setItem("vt_catalog_sync", Date.now().toString());
+      window.dispatchEvent(new CustomEvent("vt:catalog-updated"));
+    } catch (e) {}
   } else {
     if (alertEl) {
       alertEl.textContent = data?.message || "Failed to update image.";
@@ -562,29 +583,43 @@ async function saveQuickProductImage() {
 document.getElementById("productForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = document.getElementById("editProductId").value;
+  const submitBtn = document.getElementById("productSubmitBtn");
+  const origBtnText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = id ? "Updating..." : "Saving...";
+
   const payload = {
-    name: document.getElementById("pName").value,
+    name: document.getElementById("pName").value.trim(),
     category: document.getElementById("pCategory").value,
-    price: document.getElementById("pPrice").value,
-    originalPrice: document.getElementById("pOriginalPrice").value || null,
-    imageUrl: document.getElementById("pImage").value,
-    badge: document.getElementById("pBadge").value,
-    shortDesc: document.getElementById("pShortDesc").value,
-    fullDesc: document.getElementById("pFullDesc").value,
-    materials: document.getElementById("pMaterials").value,
-    dimensions: document.getElementById("pDimensions").value,
+    price: parseFloat(document.getElementById("pPrice").value) || 0,
+    originalPrice: document.getElementById("pOriginalPrice").value ? parseFloat(document.getElementById("pOriginalPrice").value) : null,
+    imageUrl: document.getElementById("pImage").value.trim(),
+    badge: document.getElementById("pBadge").value.trim(),
+    shortDesc: document.getElementById("pShortDesc").value.trim(),
+    fullDesc: document.getElementById("pFullDesc").value.trim(),
+    materials: document.getElementById("pMaterials").value.trim(),
+    dimensions: document.getElementById("pDimensions").value.trim(),
     customizable: document.getElementById("pCustomizable").checked,
     inStock: document.getElementById("pInStock").checked,
   };
   const alertEl = document.getElementById("productFormAlert");
   alertEl.classList.add("hidden");
+
   const { ok, data } = id
-    ? await apiCall("PUT", "/products/admin/" + id, payload)
+    ? await apiCall("PUT", "/products/admin/" + encodeURIComponent(id), payload)
     : await apiCall("POST", "/products/admin", payload);
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = origBtnText;
+
   if (ok) {
-    showToast(id ? "Product updated!" : "Product added!", "success");
+    showToast(id ? "Product updated successfully!" : "Product added successfully!", "success");
     closeProductModal();
     loadProducts(currentPage.products);
+    try {
+      localStorage.setItem("vt_catalog_sync", Date.now().toString());
+      window.dispatchEvent(new CustomEvent("vt:catalog-updated"));
+    } catch (e) {}
   } else {
     alertEl.textContent = data?.message || "Failed to save product.";
     alertEl.className = "alert alert-error";
@@ -595,7 +630,14 @@ document.getElementById("productForm").addEventListener("submit", async (e) => {
 async function deleteProduct(id) {
   if (!confirm("Delete this product? This cannot be undone.")) return;
   const { ok } = await apiCall("DELETE", "/products/admin/" + id);
-  if (ok) { showToast("Product deleted.", "success"); loadProducts(currentPage.products); }
+  if (ok) {
+    showToast("Product deleted.", "success");
+    loadProducts(currentPage.products);
+    try {
+      localStorage.setItem("vt_catalog_sync", Date.now().toString());
+      window.dispatchEvent(new CustomEvent("vt:catalog-updated"));
+    } catch (e) {}
+  }
 }
 
 // ==================== MESSAGES ====================

@@ -1,11 +1,12 @@
 // server.js - Vision Thread Backend - Main Express Server
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
-const path = require("path");
 const fs = require("fs");
 
 const app = express();
@@ -38,7 +39,7 @@ app.use(helmet({
 app.use(cors({
   origin: true,
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
@@ -47,10 +48,10 @@ app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 app.use(cookieParser());
 
-// Global rate limiter (100 requests per 15 minutes per IP)
+// Global rate limiter (3000 requests per 15 minutes per IP)
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 3000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: "Too many requests. Please slow down." },

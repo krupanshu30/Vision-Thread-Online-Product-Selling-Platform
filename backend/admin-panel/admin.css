@@ -595,7 +595,39 @@ body {
 .badge-orange { background: #ffedd5; color: #c2410c; }
 
 /* ==================== ACTION BUTTONS ==================== */
-.action-btns { display: flex; gap: .4rem; align-items: center; }
+.action-btns { display: flex; gap: .4rem; align-items: center; flex-wrap: nowrap; }
+.btn-action-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .35rem .75rem;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s ease;
+}
+.btn-action-edit:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+}
+.product-name-link {
+  cursor: pointer;
+  color: var(--text);
+  transition: color .2s ease;
+}
+.product-name-link:hover {
+  color: var(--blue-accent);
+  text-decoration: underline;
+}
 .btn-icon {
   width: 30px;
   height: 30px;
