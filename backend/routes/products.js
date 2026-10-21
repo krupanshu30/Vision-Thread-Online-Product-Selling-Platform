@@ -46,30 +46,31 @@ let catalogVersion = Date.now().toString(36);
 const jsProductsFilePath = path.join(__dirname, "../../js/products.js");
 const cacheFilePath = path.join(__dirname, "../data/products_cache.json");
 
+/**
+ * Save products to the COMMITTED cache file (backend/data/products_cache.json).
+ * This is the file that gets pushed to GitHub and bundled into Vercel deployments.
+ * On Vercel (read-only FS), this write will silently fail – that's OK because
+ * the file was already written locally and committed before the deploy triggered.
+ */
 function saveProductsToFileCache(products) {
-  const targetPath = process.env.VERCEL
-    ? path.join("/tmp", "products_cache.json")
-    : cacheFilePath;
   try {
-    const dir = path.dirname(targetPath);
+    const dir = path.dirname(cacheFilePath);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(targetPath, JSON.stringify(products, null, 2), "utf8");
+    fs.writeFileSync(cacheFilePath, JSON.stringify(products, null, 2), "utf8");
   } catch (e) {
-    console.warn("[PRODUCTS] Failed to write cache file:", e.message);
+    // Silently ignore on Vercel's read-only filesystem – the file was already committed
+    if (!process.env.VERCEL) {
+      console.warn("[PRODUCTS] Failed to write cache file:", e.message);
+    }
   }
 }
 
+/**
+ * Read products from the committed cache file.
+ * On Vercel, this file is bundled with the deployment (from the git repo),
+ * so it always has the latest products from the last git push.
+ */
 function readProductsFromFileCache() {
-  if (process.env.VERCEL) {
-    const tmpPath = path.join("/tmp", "products_cache.json");
-    try {
-      if (fs.existsSync(tmpPath)) {
-        const raw = fs.readFileSync(tmpPath, "utf8");
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch (e) {}
-  }
   try {
     if (fs.existsSync(cacheFilePath)) {
       const raw = fs.readFileSync(cacheFilePath, "utf8");
@@ -82,26 +83,36 @@ function readProductsFromFileCache() {
   return [];
 }
 
+// In-memory product cache - serves as fast fallback when DB or file are unavailable
+let _memProductsCache = [];
+
 function syncCatalogFiles(products) {
+  if (!Array.isArray(products) || products.length === 0) return;
+
+  // Always keep in-memory cache up to date
+  _memProductsCache = products;
+
+  // 1. Write to the committed cache file (backend/data/products_cache.json)
+  // This file gets committed to git and is bundled into every Vercel deployment
   saveProductsToFileCache(products);
 
-  if (!process.env.VERCEL) {
-    try {
-      if (fs.existsSync(jsProductsFilePath)) {
-        let content = fs.readFileSync(jsProductsFilePath, "utf8");
-        const newVersion = Date.now().toString();
-        content = content.replace(/const DATA_VERSION\s*=\s*['"][^'"]*['"];/, `const DATA_VERSION = '${newVersion}';`);
-        const jsonProducts = JSON.stringify(products, null, 2);
-        const regex = /const DEFAULT_PRODUCTS\s*=\s*\[[\s\S]*?\];\s*(window\.getVtApiBase)/;
-        if (regex.test(content)) {
-          content = content.replace(regex, `const DEFAULT_PRODUCTS = ${jsonProducts};\n\n$1`);
-          fs.writeFileSync(jsProductsFilePath, content, "utf8");
-          console.log("[PRODUCTS] ✅ Synchronized js/products.js (Version: " + newVersion + ", Products: " + products.length + ")");
-        }
+  // 2. Update js/products.js with the latest DEFAULT_PRODUCTS and bump DATA_VERSION
+  // This ensures the storefront always loads latest products even before the API responds
+  try {
+    if (fs.existsSync(jsProductsFilePath)) {
+      let content = fs.readFileSync(jsProductsFilePath, "utf8");
+      const newVersion = Date.now().toString();
+      content = content.replace(/const DATA_VERSION\s*=\s*['"][^'"]*['"];/, `const DATA_VERSION = '${newVersion}';`);
+      const jsonProducts = JSON.stringify(products, null, 2);
+      const regex = /const DEFAULT_PRODUCTS\s*=\s*\[[\s\S]*?\];\s*(window\.getVtApiBase)/;
+      if (regex.test(content)) {
+        content = content.replace(regex, `const DEFAULT_PRODUCTS = ${jsonProducts};\n\n$1`);
+        fs.writeFileSync(jsProductsFilePath, content, "utf8");
+        console.log("[PRODUCTS] ✅ Synchronized js/products.js (Version: " + newVersion + ", Products: " + products.length + ")");
       }
-    } catch (e) {
-      console.warn("[PRODUCTS] Could not update js/products.js:", e.message);
     }
+  } catch (e) {
+    console.warn("[PRODUCTS] Could not update js/products.js:", e.message);
   }
 }
 
@@ -124,7 +135,7 @@ let deployQueued = false;
 
 function triggerAutoGitDeploy(reason = "Product catalog update") {
   if (process.env.VERCEL) {
-    // When running inside Vercel serverless, ping deploy hook directly
+    // When running inside Vercel serverless, only ping deploy hook
     pingVercelDeployHook();
     return;
   }
@@ -137,28 +148,46 @@ function triggerAutoGitDeploy(reason = "Product catalog update") {
 
   const { exec } = require("child_process");
   const rootDir = path.resolve(__dirname, "../..");
-  const safeReason = (reason || "Product catalog update").replace(/["`$]/g, "").slice(0, 80);
-  const cmd = `git add backend/data/products_cache.json js/products.js backend/uploads && git commit -m "Auto-deploy: ${safeReason} [auto-sync]" && git push origin main`;
+  const safeReason = (reason || "Product catalog update").replace(/["`$\\]/g, "").slice(0, 80);
 
-  console.log(`[AUTO-DEPLOY] 🚀 Deploying updates to GitHub & Vercel (${safeReason})...`);
-  exec(cmd, { cwd: rootDir }, (err, stdout, stderr) => {
-    isDeploying = false;
-    if (err) {
-      if (err.message && err.message.includes("nothing to commit")) {
-        console.log("[AUTO-DEPLOY] No git changes to commit.");
-      } else {
-        console.warn("[AUTO-DEPLOY] Git push warning:", err.message);
+  // Use separate git commands so a failure in one step doesn't kill the whole chain
+  // Step 1: Stage all product-related files
+  const addCmd = `git add -f backend/data/products_cache.json js/products.js backend/uploads backend/data`;
+  // Step 2: Commit (allow failure if nothing to commit)
+  const commitMsg = `Auto-deploy: ${safeReason} [auto-sync]`;
+  const commitCmd = `git commit -m "${commitMsg}"`;
+  // Step 3: Push
+  const pushCmd = `git push origin main`;
+
+  console.log(`[AUTO-DEPLOY] 🚀 Deploying to GitHub & Vercel (${safeReason})...`);
+
+  exec(addCmd, { cwd: rootDir }, (addErr) => {
+    if (addErr) {
+      console.warn("[AUTO-DEPLOY] git add warning:", addErr.message);
+    }
+    exec(commitCmd, { cwd: rootDir }, (commitErr) => {
+      if (commitErr) {
+        if (commitErr.message && (commitErr.message.includes("nothing to commit") || commitErr.message.includes("nothing added"))) {
+          console.log("[AUTO-DEPLOY] No git changes to commit - pinging deploy hook anyway.");
+          pingVercelDeployHook();
+          isDeploying = false;
+          if (deployQueued) triggerAutoGitDeploy("Queued updates");
+          return;
+        }
+        console.warn("[AUTO-DEPLOY] git commit warning:", commitErr.message);
       }
-    } else {
-      console.log("[AUTO-DEPLOY] ✅ Pushed to GitHub successfully! Vercel is building the update.");
-    }
-
-    // Always ping Vercel deploy hook to guarantee a fresh production build is dispatched
-    pingVercelDeployHook();
-
-    if (deployQueued) {
-      triggerAutoGitDeploy("Queued updates");
-    }
+      exec(pushCmd, { cwd: rootDir }, (pushErr) => {
+        isDeploying = false;
+        if (pushErr) {
+          console.warn("[AUTO-DEPLOY] git push warning:", pushErr.message);
+        } else {
+          console.log("[AUTO-DEPLOY] ✅ Pushed to GitHub successfully! Vercel is now building the update.");
+        }
+        // Always ping Vercel deploy hook after push attempt
+        pingVercelDeployHook();
+        if (deployQueued) triggerAutoGitDeploy("Queued updates");
+      });
+    });
   });
 }
 
@@ -260,13 +289,24 @@ router.get("/", async (req, res) => {
     });
   } catch (err) {
     console.error("[PRODUCTS] DB Error, serving fallback cache:", err.message);
+    // Fallback chain: file cache → in-memory cache
     const cached = readProductsFromFileCache();
     if (cached && cached.length > 0) {
+      _memProductsCache = cached; // warm up in-memory cache
       return res.json({
         success: true,
         catalogVersion: vInfo.version,
         products: cached,
         fromCache: true,
+      });
+    }
+    // Last resort: serve in-memory cache (populated from previous admin operations)
+    if (_memProductsCache && _memProductsCache.length > 0) {
+      return res.json({
+        success: true,
+        catalogVersion: vInfo.version,
+        products: _memProductsCache,
+        fromMemCache: true,
       });
     }
     return res.status(500).json({ success: false, message: "Failed to fetch products." });

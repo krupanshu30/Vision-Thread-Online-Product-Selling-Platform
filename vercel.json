@@ -6,10 +6,30 @@
       "includeFiles": "index.html,css/**,js/**,images/**,backend/**"
     }
   },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/api/index.js"
+      "src": "/uploads/(.*)",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/admin(.*)",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/(css|js|images)/(.*)",
+      "dest": "/$1/$2"
+    },
+    {
+      "src": "/(.*\\.(ico|png|jpg|jpeg|svg|webp|gif|woff|woff2|ttf|eot))",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.js"
     }
   ]
 }
