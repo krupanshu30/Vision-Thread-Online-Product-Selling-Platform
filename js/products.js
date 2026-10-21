@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792593712298'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792593854389'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -58,6 +58,8 @@ const DEFAULT_PRODUCTS = [
       "Pink",
       "White"
     ],
+    "materials": "",
+    "dimensions": "",
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-21T14:32:26.000Z",
@@ -82,9 +84,13 @@ const DEFAULT_PRODUCTS = [
       "/uploads/prod_1791566944633_WhatsApp_Image_2026-08-15_at_12_28_43_PM__2_.jpeg"
     ],
     "colors": [
-      "Pink",
-      "White"
+      "Pink & Lilac",
+      "Blush Pink",
+      "Pure Purple",
+      "Pastel Mix"
     ],
+    "materials": "High density velvet pipe cleaners, floral wire stem",
+    "dimensions": "Height: 30cm, Width: 18cm",
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
@@ -108,10 +114,9 @@ const DEFAULT_PRODUCTS = [
     "gallery": [
       "/uploads/prod_1792489207816_WhatsApp_Image_2026-10-20_at_2_39_54_PM.jpeg"
     ],
-    "colors": [
-      "Pink",
-      "White"
-    ],
+    "colors": [],
+    "materials": "Chenille craft stem, floral tape, cellophane wrap",
+    "dimensions": "Height: 28cm, Width: 12cm",
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
@@ -136,9 +141,11 @@ const DEFAULT_PRODUCTS = [
       "/uploads/prod_1792489385502_WhatsApp_Image_2026-10-20_at_2_40_17_PM.jpeg"
     ],
     "colors": [
-      "Pink",
-      "White"
+      "Classic White & Yellow",
+      "Blush Pink & Peach"
     ],
+    "materials": "Craft foam & chenille petal blend",
+    "dimensions": "Diameter: 6.5cm",
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
@@ -163,9 +170,11 @@ const DEFAULT_PRODUCTS = [
       "/uploads/prod_1792489483786_WhatsApp_Image_2026-10-20_at_2_40_15_PM__1_.jpeg"
     ],
     "colors": [
-      "Pink",
-      "White"
+      "Marigold Orange & Red",
+      "Rose Pink & White"
     ],
+    "materials": "Premium chenille pipe cleaners, golden spacer beads/ all available in all colours",
+    "dimensions": "Length: 45cm (adjustable)",
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
@@ -190,9 +199,12 @@ const DEFAULT_PRODUCTS = [
       "/uploads/prod_1792490041199_WhatsApp_Image_2026-10-20_at_2_40_14_PM.jpeg"
     ],
     "colors": [
-      "Pink",
-      "White"
+      "Dusty Rose Pink",
+      "Mint Green",
+      "Lilac Dream"
     ],
+    "materials": "Seamless stretch elastic band, chenille floral accent",
+    "dimensions": "Diameter: 8cm",
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
@@ -217,9 +229,12 @@ const DEFAULT_PRODUCTS = [
       "/uploads/prod_1792490176747_WhatsApp_Image_2026-10-20_at_2_40_08_PM.jpeg"
     ],
     "colors": [
-      "Pink",
-      "White"
+      "Blush Pink Blossom",
+      "Sky Blue Daisy",
+      "Vintage Mauve"
     ],
+    "materials": "Gold-finish alloy clip, grosgrain ribbon",
+    "dimensions": "Length: 6cm, Width: 3.5cm",
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
@@ -244,9 +259,11 @@ const DEFAULT_PRODUCTS = [
       "/uploads/prod_1792490230105_WhatsApp_Image_2026-10-20_at_2_40_08_PM__1_.jpeg"
     ],
     "colors": [
-      "Pink",
-      "White"
+      "Pastel Multi-Flower",
+      "Princess Pink & Pearls"
     ],
+    "materials": "Flexible resin headband, satin wrap",
+    "dimensions": "One size fits all (flexible)",
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
@@ -271,9 +288,11 @@ const DEFAULT_PRODUCTS = [
       "/uploads/prod_1792490324018_WhatsApp_Image_2026-10-20_at_2_40_07_PM__1_.jpeg"
     ],
     "colors": [
-      "Pink",
-      "White"
+      "Royal Peacock (Blue & Green)",
+      "Rose Gold Peacock"
     ],
+    "materials": "Metallic craft thread, chenille wire, brass keyring",
+    "dimensions": "Length: 11cm including chain",
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
@@ -298,9 +317,11 @@ const DEFAULT_PRODUCTS = [
       "/uploads/prod_1792489619212_WhatsApp_Image_2026-10-20_at_2_40_16_PM.jpeg"
     ],
     "colors": [
-      "Pink",
-      "White"
+      "Marigold Yellow & Orange",
+      "Festive Red & Gold"
     ],
+    "materials": "Hand-shaped chenille floral accents, golden gota patti",
+    "dimensions": "Standard 3-foot doorway width (90cm)",
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
@@ -325,9 +346,12 @@ const DEFAULT_PRODUCTS = [
       "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80"
     ],
     "colors": [
-      "Pink",
-      "White"
+      "Pastel Pink Blossom",
+      "Royal Lavender",
+      "Golden Sunflower"
     ],
+    "materials": "Rigid kraft gift box, shredded wood bedding, satin ribbon",
+    "dimensions": "Box: 25cm x 20cm x 10cm",
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
