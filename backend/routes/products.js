@@ -105,11 +105,29 @@ function syncCatalogFiles(products) {
   }
 }
 
+const VERCEL_DEPLOY_HOOK_URL = process.env.VERCEL_DEPLOY_HOOK_URL || "https://api.vercel.com/v1/integrations/deploy/prj_HjiRllscsRHU5pSOpQTnWdsPRh1p/M6debyLwy9";
+
+function pingVercelDeployHook() {
+  if (!VERCEL_DEPLOY_HOOK_URL) return;
+  fetch(VERCEL_DEPLOY_HOOK_URL, { method: "POST" })
+    .then(r => r.json())
+    .then(data => {
+      console.log("[AUTO-DEPLOY] 🚀 Vercel Deploy Hook triggered successfully!", data?.job?.id || data?.message || "triggered");
+    })
+    .catch(err => {
+      console.warn("[AUTO-DEPLOY] Deploy Hook notice:", err.message);
+    });
+}
+
 let isDeploying = false;
 let deployQueued = false;
 
 function triggerAutoGitDeploy(reason = "Product catalog update") {
-  if (process.env.VERCEL) return;
+  if (process.env.VERCEL) {
+    // When running inside Vercel serverless, ping deploy hook directly
+    pingVercelDeployHook();
+    return;
+  }
   if (isDeploying) {
     deployQueued = true;
     return;
@@ -134,6 +152,10 @@ function triggerAutoGitDeploy(reason = "Product catalog update") {
     } else {
       console.log("[AUTO-DEPLOY] ✅ Pushed to GitHub successfully! Vercel is building the update.");
     }
+
+    // Always ping Vercel deploy hook to guarantee a fresh production build is dispatched
+    pingVercelDeployHook();
+
     if (deployQueued) {
       triggerAutoGitDeploy("Queued updates");
     }
