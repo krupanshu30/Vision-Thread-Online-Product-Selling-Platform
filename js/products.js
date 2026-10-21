@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792594091782'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792594732831'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -36,6 +36,35 @@ const CATEGORIES = [
 ];
 
 const DEFAULT_PRODUCTS = [
+  {
+    "id": "vt-mvi8mc5l",
+    "dbId": 26,
+    "productCode": "vt-mvi8mc5l",
+    "name": "lily keychain",
+    "category": "Keychains",
+    "price": 50,
+    "originalPrice": 80,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badge": null,
+    "shortDescription": "handmade",
+    "fullDescription": "",
+    "image": "/uploads/prod_1792594686194_WhatsApp_Image_2026-10-20_at_2_40_02_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792594686194_WhatsApp_Image_2026-10-20_at_2_40_02_PM.jpeg",
+    "gallery": [
+      "/uploads/prod_1792594686194_WhatsApp_Image_2026-10-20_at_2_40_02_PM.jpeg"
+    ],
+    "colors": [
+      "Pink",
+      "White"
+    ],
+    "materials": "",
+    "dimensions": "",
+    "customizable": true,
+    "inStock": true,
+    "createdAt": "2026-10-21T14:58:52.000Z",
+    "updatedAt": "2026-10-21T14:58:52.000Z"
+  },
   {
     "id": "vt-mvi7oc0n",
     "dbId": 25,
