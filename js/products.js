@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792594034776'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792594091782'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -340,10 +340,10 @@ const DEFAULT_PRODUCTS = [
     "badge": "Ultimate Gift",
     "shortDescription": "Curated luxury craft box: mini bouquet, hair accessories, custom keychain & sweet note.",
     "fullDescription": "The ultimate bespoke gifting experience!",
-    "image": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80",
-    "relativeImage": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80",
+    "image": "/uploads/prod_1792594088784_WhatsApp_Image_2026-10-20_at_2_39_58_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792594088784_WhatsApp_Image_2026-10-20_at_2_39_58_PM.jpeg",
     "gallery": [
-      "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80"
+      "/uploads/prod_1792594088784_WhatsApp_Image_2026-10-20_at_2_39_58_PM.jpeg"
     ],
     "colors": [
       "Pastel Pink Blossom",
@@ -355,7 +355,7 @@ const DEFAULT_PRODUCTS = [
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
-    "updatedAt": "2026-10-09T15:49:37.000Z"
+    "updatedAt": "2026-10-21T14:48:11.000Z"
   }
 ];
 
