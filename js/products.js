@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792594732831'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792595311202'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
