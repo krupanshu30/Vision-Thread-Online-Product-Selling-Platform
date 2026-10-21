@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792595311202'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792595619384'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -36,6 +36,35 @@ const CATEGORIES = [
 ];
 
 const DEFAULT_PRODUCTS = [
+  {
+    "id": "vt-mvi95c88",
+    "dbId": 27,
+    "productCode": "vt-mvi95c88",
+    "name": "Pink & Purple Lily Bouquet",
+    "category": "Hair Accessories",
+    "price": 50,
+    "originalPrice": 80,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badge": null,
+    "shortDescription": "handmade",
+    "fullDescription": "",
+    "image": "/uploads/prod_1792595588943_WhatsApp_Image_2026-10-20_at_2_40_07_PM__2_.jpeg",
+    "relativeImage": "/uploads/prod_1792595588943_WhatsApp_Image_2026-10-20_at_2_40_07_PM__2_.jpeg",
+    "gallery": [
+      "/uploads/prod_1792595588943_WhatsApp_Image_2026-10-20_at_2_40_07_PM__2_.jpeg"
+    ],
+    "colors": [
+      "Pink",
+      "White"
+    ],
+    "materials": "",
+    "dimensions": "",
+    "customizable": true,
+    "inStock": true,
+    "createdAt": "2026-10-21T15:13:39.000Z",
+    "updatedAt": "2026-10-21T15:13:39.000Z"
+  },
   {
     "id": "vt-mvi8mc5l",
     "dbId": 26,
