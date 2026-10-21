@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 5000;
 // ============================================================
 // Uploads and Static Assets
 // ============================================================
-const uploadsDir = process.env.VERCEL ? path.join("/tmp", "uploads") : path.join(__dirname, "uploads");
+const uploadsDir = path.join(__dirname, "uploads");
 try {
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
@@ -23,25 +23,51 @@ try {
 } catch (e) {
   // Gracefully ignore on read-only environments
 }
-app.use("/uploads", express.static(uploadsDir));
+
+if (process.env.VERCEL) {
+  // On Vercel: serve /tmp/uploads first (runtime uploads), then bundled uploads (committed images)
+  const tmpUploadsDir = path.join("/tmp", "uploads");
+  try {
+    if (!fs.existsSync(tmpUploadsDir)) fs.mkdirSync(tmpUploadsDir, { recursive: true });
+  } catch (e) {}
+  app.use("/uploads", express.static(tmpUploadsDir));
+  app.use("/uploads", express.static(uploadsDir)); // fallback: committed images
+} else {
+  app.use("/uploads", express.static(uploadsDir));
+}
 app.use("/images", express.static(path.join(__dirname, "../images")));
 app.use("/admin/images", express.static(path.join(__dirname, "../images")));
 
 // ============================================================
-// Security Middleware
+// Security & Proxy Middleware
 // ============================================================
+app.set("trust proxy", true);
+
 app.use(helmet({
   contentSecurityPolicy: false, // Disabled for serving admin panel HTML
   crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
 
-// CORS - allow local frontend origins and tools
+// CORS - allow all origins, tools, tunnels, and mobile devices
 app.use(cors({
   origin: true,
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  // Allow all requested headers including Cache-Control, Pragma, Bypass-Tunnel-Reminder
 }));
+app.options("*", cors());
+
+// Anti-caching headers for storefront HTML and JS to ensure all mobile updates appear immediately
+app.use((req, res, next) => {
+  if (req.path.endsWith(".html") || req.path === "/" || req.path.endsWith(".js") || req.path.startsWith("/api/")) {
+    res.set({
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0",
+    });
+  }
+  next();
+});
 
 // Parse JSON & cookies
 app.use(express.json({ limit: "5mb" }));
@@ -116,14 +142,30 @@ app.use((err, req, res, next) => {
 // Start Server (only when run directly: node backend/server.js)
 // ============================================================
 if (require.main === module) {
+  const os = require("os");
+  function getLanIp() {
+    try {
+      const ifaces = os.networkInterfaces();
+      for (const dev in ifaces) {
+        for (const details of ifaces[dev]) {
+          if (details.family === "IPv4" && !details.internal) {
+            return details.address;
+          }
+        }
+      }
+    } catch (e) {}
+    return "192.168.1.104";
+  }
+  const lanIp = getLanIp();
+
   app.listen(PORT, "0.0.0.0", () => {
     console.log("\n╔══════════════════════════════════════════════════════════╗");
     console.log("║           Vision Thread Store & Backend Running          ║");
     console.log("╠══════════════════════════════════════════════════════════╣");
     console.log("║  Website (This PC):    http://localhost:" + PORT + "               ║");
-    console.log("║  Website (All Devices):http://192.168.1.104:" + PORT + "           ║");
+    console.log("║  Website (All Devices):http://" + lanIp + ":" + PORT + "           ║");
     console.log("║  Admin Panel:          http://localhost:" + PORT + "/admin         ║");
-    console.log("║  Admin (All Devices):  http://192.168.1.104:" + PORT + "/admin     ║");
+    console.log("║  Admin (All Devices):  http://" + lanIp + ":" + PORT + "/admin     ║");
     console.log("╚══════════════════════════════════════════════════════════╝\n");
   });
 }

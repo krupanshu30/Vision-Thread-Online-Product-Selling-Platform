@@ -19,14 +19,11 @@ desktop.ini
 # VS Code workspace
 .vscode/
 
-# Media & large files
+# Media & large raw recordings
 *.MOV
 *.mov
 *.mp4
 *.avi
-
-# Uploaded product images (generated at runtime)
-backend/uploads/
 
 # Temporary files
 *.tmp
@@ -43,3 +40,13 @@ backend/uploads/
 
 # Google URL shortcuts
 Google.url
+
+# Vercel local config (contains project IDs - optional to commit)
+# .vercel
+
+# SQL exports (large, not needed in repo)
+vision_thread_db_export.sql
+
+# NOTE: backend/uploads/ and backend/data/ are intentionally NOT ignored
+# so product images and the products cache are included in the git repo
+# and available to Vercel's serverless function at runtime.

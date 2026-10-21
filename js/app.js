@@ -34,17 +34,19 @@ class VisionThreadApp {
     const trimmed = imgUrl.trim();
     if (!trimmed) return 'images/pink-purple-lily-bouquet.jpg';
 
-    // If it's a relative path starting with /uploads/
-    if (trimmed.startsWith('/uploads/')) {
-      const backendOrigin = this.apiBase ? this.apiBase.replace(/\/api\/?$/, '') : (window.location.origin || '');
-      return `${backendOrigin}${trimmed}`;
+    // Check if it's an uploaded product image
+    const uploadMatch = trimmed.match(/\/uploads\/[^"'\s?#]+/);
+    if (uploadMatch) {
+      const relPath = uploadMatch[0];
+      const backendOrigin = (this.apiBase && !this.apiBase.startsWith('/'))
+        ? this.apiBase.replace(/\/api\/?$/, '')
+        : (window.location.origin || '');
+      return `${backendOrigin}${relPath}`;
     }
 
-    // If it contains localhost:5000/uploads/ but we are running on a mobile / LAN host or custom domain
-    if (trimmed.includes('localhost:5000/uploads/')) {
-      const parts = trimmed.split('/uploads/');
-      const backendOrigin = this.apiBase ? this.apiBase.replace(/\/api\/?$/, '') : (window.location.origin || '');
-      return `${backendOrigin}/uploads/${parts[1]}`;
+    // Upgrade insecure HTTP image URLs when viewing on HTTPS mobile/public web
+    if (window.location && window.location.protocol === 'https:' && trimmed.startsWith('http://')) {
+      return trimmed.replace(/^http:\/\//, 'https://');
     }
 
     return trimmed;
@@ -109,12 +111,12 @@ class VisionThreadApp {
       this.syncOfflineOrders();
     });
 
-    // Periodic lightweight background sync every 6 seconds to detect admin edits in real-time
+    // Periodic lightweight background sync every 3.5 seconds to detect admin edits in real-time on all devices
     this.syncInterval = setInterval(() => {
       if (window.productStore && typeof window.productStore.checkCatalogVersion === 'function') {
         window.productStore.checkCatalogVersion();
       }
-    }, 6000);
+    }, 3500);
 
     // Proactively sync products from backend now that app is initialized
     if (window.productStore && typeof window.productStore.syncWithBackend === 'function') {

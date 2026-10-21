@@ -43,6 +43,48 @@ const upload = multer({
 });
 
 let catalogVersion = Date.now().toString(36);
+const cacheFilePath = path.join(__dirname, "../data/products_cache.json");
+
+function saveProductsToFileCache(products) {
+  try {
+    const dir = path.dirname(cacheFilePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(cacheFilePath, JSON.stringify(products, null, 2), "utf8");
+  } catch (e) {
+    console.warn("[PRODUCTS] Failed to write cache file:", e.message);
+  }
+}
+
+function readProductsFromFileCache() {
+  try {
+    if (fs.existsSync(cacheFilePath)) {
+      const raw = fs.readFileSync(cacheFilePath, "utf8");
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {
+    console.warn("[PRODUCTS] Failed to read cache file:", e.message);
+  }
+  return [];
+}
+
+async function getCatalogVersionFromDb() {
+  try {
+    const [[countRow]] = await db.execute("SELECT COUNT(*) as total, UNIX_TIMESTAMP(MAX(updated_at)) as max_updated, UNIX_TIMESTAMP(MAX(created_at)) as max_created FROM products");
+    if (countRow) {
+      catalogVersion = `v${countRow.total}_${countRow.max_updated || countRow.max_created || Date.now()}`;
+      return { version: catalogVersion, total: countRow.total, lastUpdated: countRow.max_updated || countRow.max_created };
+    }
+  } catch (err) {
+    // If DB offline, fallback to in-memory/cache count
+    const cached = readProductsFromFileCache();
+    if (cached.length > 0) {
+      catalogVersion = `v${cached.length}_cache`;
+      return { version: catalogVersion, total: cached.length, lastUpdated: null };
+    }
+  }
+  return { version: catalogVersion, total: 0, lastUpdated: null };
+}
 
 function sanitizeImageUrlForDb(url) {
   if (!url || typeof url !== "string") return "";
@@ -61,31 +103,28 @@ router.get("/version", async (req, res) => {
     "Pragma": "no-cache",
     "Expires": "0",
   });
-  try {
-    const [[countRow]] = await db.execute("SELECT COUNT(*) as total, MAX(updated_at) as last_updated FROM products");
-    return res.json({
-      success: true,
-      version: catalogVersion,
-      total: countRow.total,
-      lastUpdated: countRow.last_updated,
-      timestamp: Date.now(),
-    });
-  } catch (err) {
-    return res.json({ success: true, version: catalogVersion, timestamp: Date.now() });
-  }
+  const vInfo = await getCatalogVersionFromDb();
+  return res.json({
+    success: true,
+    version: vInfo.version,
+    total: vInfo.total,
+    lastUpdated: vInfo.lastUpdated,
+    timestamp: Date.now(),
+  });
 });
 
 // GET /api/products - List products with live cache-busting & stock info
 router.get("/", async (req, res) => {
-  try {
-    res.set({
-      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-      "Pragma": "no-cache",
-      "Expires": "0",
-      "Surrogate-Control": "no-store",
-      "X-Catalog-Version": catalogVersion,
-    });
+  const vInfo = await getCatalogVersionFromDb();
+  res.set({
+    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+    "Pragma": "no-cache",
+    "Expires": "0",
+    "Surrogate-Control": "no-store",
+    "X-Catalog-Version": vInfo.version,
+  });
 
+  try {
     const { category, search, sort, inStockOnly } = req.query;
     let sql = "SELECT * FROM products WHERE 1=1";
     const params = [];
@@ -114,13 +153,29 @@ router.get("/", async (req, res) => {
     sql += " ORDER BY " + (sortMap[sort] || sortMap.default);
 
     const [rows] = await db.execute(sql, params);
+    const formatted = rows.map(r => formatProduct(r, req));
+
+    // Save full catalog to local fallback cache when fetching full list
+    if (!category && !search && (inStockOnly === undefined || inStockOnly === "")) {
+      saveProductsToFileCache(formatted);
+    }
+
     return res.json({
       success: true,
-      catalogVersion,
-      products: rows.map(r => formatProduct(r, req)),
+      catalogVersion: vInfo.version,
+      products: formatted,
     });
   } catch (err) {
-    console.error("[PRODUCTS] Error:", err.message);
+    console.error("[PRODUCTS] DB Error, serving fallback cache:", err.message);
+    const cached = readProductsFromFileCache();
+    if (cached && cached.length > 0) {
+      return res.json({
+        success: true,
+        catalogVersion: vInfo.version,
+        products: cached,
+        fromCache: true,
+      });
+    }
     return res.status(500).json({ success: false, message: "Failed to fetch products." });
   }
 });
@@ -224,12 +279,15 @@ router.post(
           customizable !== false ? 1 : 0, inStock !== false ? 1 : 0,
         ]
       );
-      catalogVersion = Date.now().toString(36);
+      const vInfo = await getCatalogVersionFromDb();
       const [rows] = await db.execute("SELECT * FROM products WHERE id = ?", [result.insertId]);
+      const [allRows] = await db.execute("SELECT * FROM products ORDER BY in_stock DESC, created_at DESC");
+      saveProductsToFileCache(allRows.map(r => formatProduct(r, req)));
+
       return res.status(201).json({
         success: true,
         message: "Product added successfully!",
-        catalogVersion,
+        catalogVersion: vInfo.version,
         product: formatProduct(rows[0], req),
       });
     } catch (err) {
@@ -299,12 +357,15 @@ router.patch("/admin/:id/image", authenticateAdmin, async (req, res) => {
       [cleanImg, JSON.stringify(gallery), actualDbId]
     );
 
-    catalogVersion = Date.now().toString(36);
+    const vInfo = await getCatalogVersionFromDb();
     const [rows] = await db.execute("SELECT * FROM products WHERE id = ?", [actualDbId]);
+    const [allRows] = await db.execute("SELECT * FROM products ORDER BY in_stock DESC, created_at DESC");
+    saveProductsToFileCache(allRows.map(r => formatProduct(r, req)));
+
     return res.json({
       success: true,
       message: "Product image updated successfully!",
-      catalogVersion,
+      catalogVersion: vInfo.version,
       product: formatProduct(rows[0], req),
     });
   } catch (err) {
@@ -353,12 +414,15 @@ router.put("/admin/:id", authenticateAdmin, async (req, res) => {
       ]
     );
 
-    catalogVersion = Date.now().toString(36);
+    const vInfo = await getCatalogVersionFromDb();
     const [rows] = await db.execute("SELECT * FROM products WHERE id = ?", [actualDbId]);
+    const [allRows] = await db.execute("SELECT * FROM products ORDER BY in_stock DESC, created_at DESC");
+    saveProductsToFileCache(allRows.map(r => formatProduct(r, req)));
+
     return res.json({
       success: true,
       message: "Product updated successfully!",
-      catalogVersion,
+      catalogVersion: vInfo.version,
       product: formatProduct(rows[0], req),
     });
   } catch (err) {
@@ -374,11 +438,15 @@ router.delete("/admin/:id", authenticateAdmin, async (req, res) => {
     const numId = !isNaN(idParam) ? parseInt(idParam, 10) : 0;
     const [result] = await db.execute("DELETE FROM products WHERE id = ? OR product_code = ?", [numId, idParam]);
     if (result.affectedRows === 0) return res.status(404).json({ success: false, message: "Product not found." });
-    catalogVersion = Date.now().toString(36);
+    
+    const vInfo = await getCatalogVersionFromDb();
+    const [allRows] = await db.execute("SELECT * FROM products ORDER BY in_stock DESC, created_at DESC");
+    saveProductsToFileCache(allRows.map(r => formatProduct(r, req)));
+
     return res.json({
       success: true,
       message: "Product deleted successfully.",
-      catalogVersion,
+      catalogVersion: vInfo.version,
     });
   } catch (err) {
     return res.status(500).json({ success: false, message: "Server error." });
@@ -387,19 +455,12 @@ router.delete("/admin/:id", authenticateAdmin, async (req, res) => {
 
 // Helper: format DB row to app-friendly object with dynamic host resolution
 function formatProduct(row, req) {
-  const host = req ? req.get("host") : null;
-  const protocol = req ? (req.protocol || "http") : "http";
-
   function cleanUrl(u) {
     if (!u || typeof u !== "string") return "";
     const trimmed = u.trim();
     const uploadMatch = trimmed.match(/\/uploads\/[^"'\s?#]+/);
     if (uploadMatch) {
-      const relPath = uploadMatch[0];
-      if (host) {
-        return `${protocol}://${host}${relPath}`;
-      }
-      return relPath;
+      return uploadMatch[0];
     }
     return trimmed;
   }
