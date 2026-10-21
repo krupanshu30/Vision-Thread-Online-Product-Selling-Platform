@@ -41,8 +41,8 @@ desktop.ini
 # Google URL shortcuts
 Google.url
 
-# Vercel local config (contains project IDs - optional to commit)
-# .vercel
+# Vercel local config (contains project IDs - local only)
+.vercel
 
 # SQL exports (large, not needed in repo)
 vision_thread_db_export.sql

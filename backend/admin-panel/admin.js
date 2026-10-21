@@ -173,7 +173,7 @@ async function loadDashboard() {
         <td>${e(o.customer_name)}</td>
         <td>${e(o.customer_mobile)}</td>
         <td><strong>₹${parseFloat(o.grand_total).toLocaleString("en-IN")}</strong></td>
-        <td><span class="badge badge-gray">${e(o.payment_method || "-")}</span></td>
+        <td>${paymentBadge(o.payment_method)}</td>
         <td>${statusBadge(o.status)}</td>
         <td>${fmtDate(o.created_at)}</td>
         <td>
@@ -209,7 +209,7 @@ function renderOrdersTable(orders) {
       <td>${e(o.customer_name)}</td>
       <td>${e(o.customer_mobile)}</td>
       <td>₹${parseFloat(o.grand_total).toLocaleString("en-IN")}</td>
-      <td><span class="badge badge-gray">${e(o.payment_method || "-")}</span></td>
+      <td>${paymentBadge(o.payment_method)}</td>
       <td>${statusBadge(o.status)}</td>
       <td>${fmtDate(o.created_at)}</td>
       <td>
@@ -240,9 +240,9 @@ async function viewOrder(orderId) {
         <div class="detail-item"><span>Customer</span><strong>${e(o.customer_name)}</strong></div>
         <div class="detail-item"><span>Mobile</span><strong>${e(o.customer_mobile)}</strong></div>
         <div class="detail-item"><span>Email</span><strong>${e(o.customer_email || "-")}</strong></div>
-        <div class="detail-item"><span>Payment</span><strong>${e(o.payment_method || "-")}</strong></div>
+        <div class="detail-item"><span>Payment</span><strong>${paymentBadge(o.payment_method)}</strong></div>
         <div class="detail-item"><span>Subtotal</span><strong>₹${o.subtotal}</strong></div>
-        <div class="detail-item"><span>Delivery</span><strong>₹${o.delivery_charge}</strong></div>
+        <div class="detail-item"><span>Delivery</span><strong>${parseFloat(o.delivery_charge) > 0 ? '₹' + o.delivery_charge : '₹0'}</strong></div>
         <div class="detail-item"><span>Discount</span><strong>-₹${o.discount}</strong></div>
         <div class="detail-item"><span>Grand Total</span><strong style="color:var(--blue-primary)">₹${o.grand_total}</strong></div>
         <div class="detail-item" style="grid-column:1/-1"><span>Address</span><strong>${e(o.address)}, ${e(o.city)}, ${e(o.state)} - ${e(o.pincode)}</strong></div>
@@ -854,6 +854,14 @@ function customStatusBadge(status) {
   const map = { new: "blue", in_review: "purple", approved: "orange", in_progress: "pink", completed: "green", cancelled: "red" };
   const cls = map[status] || "gray";
   return `<span class="badge badge-${cls}">${(status || "-").replace(/_/g, " ")}</span>`;
+}
+
+function paymentBadge(method) {
+  if (!method) return `<span class="badge badge-gray">-</span>`;
+  if (/instagram/i.test(method)) {
+    return `<span class="badge" style="background:#fce7f3;color:#be185d;border:1px solid #fbcfe8;font-weight:600">📸 Instagram DM</span>`;
+  }
+  return `<span class="badge badge-gray">${e(method)}</span>`;
 }
 
 function e(str) {

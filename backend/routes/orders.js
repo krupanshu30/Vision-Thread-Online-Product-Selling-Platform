@@ -79,6 +79,75 @@ router.post(["/", "/orders"], [
 });
 
 // ======================================================
+// PUBLIC: Submit Instagram DM order (saves to DB + shows in Admin Panel)
+// ======================================================
+router.post("/instagram-order", [
+  body().custom((value, { req }) => {
+    const name = (req.body.customerName || req.body.name || "").trim();
+    if (!name) throw new Error("Customer name required");
+    const mobile = (req.body.customerMobile || req.body.phone || req.body.customerPhone || "").trim().replace(/\D/g, "");
+    if (!mobile || mobile.length < 10) throw new Error("Valid 10-digit phone number required");
+    const address = (req.body.address || req.body.fullAddress || "").trim();
+    if (!address) throw new Error("Full address required");
+    const pincode = (req.body.pincode || req.body.pinCode || req.body.pin || "").trim();
+    if (!pincode || !/^\d{6}$/.test(pincode)) throw new Error("Valid 6-digit PIN code required");
+    const items = req.body.items;
+    if (!Array.isArray(items) || items.length === 0) throw new Error("Order must have at least one product");
+    return true;
+  }),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).json({ success: false, message: errors.array()[0].msg });
+
+  const customerName = (req.body.customerName || req.body.name || "").trim();
+  const rawMobile = (req.body.customerMobile || req.body.phone || req.body.customerPhone || "").trim();
+  const cleanMobile = rawMobile.replace(/\D/g, "");
+  const customerMobile = cleanMobile.length >= 10 ? cleanMobile.slice(-10) : rawMobile.slice(0, 20);
+  const address = (req.body.address || req.body.fullAddress || "").trim();
+  const pincode = (req.body.pincode || req.body.pinCode || req.body.pin || "").trim();
+  const customerEmail = (req.body.customerEmail || req.body.email || "").trim() || null;
+  const city = (req.body.city || "").trim();
+  const state = (req.body.state || "").trim();
+  const { subtotal, deliveryCharge, discount, grandTotal, couponCode, items, notes } = req.body;
+
+  const orderId = (req.body.orderId && typeof req.body.orderId === "string" && req.body.orderId.trim())
+    ? req.body.orderId.trim()
+    : "#VT-" + Math.floor(10000 + Math.random() * 90000);
+
+  try {
+    await db.execute(
+      `INSERT INTO orders (order_id, customer_name, customer_mobile, customer_email, address, city, state, pincode, payment_method, subtotal, delivery_charge, discount, grand_total, coupon_code, notes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        orderId, customerName, customerMobile, customerEmail || null, address, city, state || "", pincode,
+        "Instagram DM (@vision_thread00)",
+        parseFloat(subtotal) || 0, 0,
+        parseFloat(discount) || 0, parseFloat(grandTotal || subtotal) || 0,
+        couponCode || null,
+        notes || null
+      ]
+    );
+
+    // Insert order items
+    for (const item of items) {
+      await db.execute(
+        "INSERT INTO order_items (order_id, product_code, product_name, category, price, quantity, color, custom_note, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [orderId, item.productCode || null, item.name, item.category || "", parseFloat(item.price), parseInt(item.quantity), item.color || "", item.customNote || null, item.image || ""]
+      );
+    }
+
+    return res.status(201).json({ success: true, message: "Instagram order saved!", orderId });
+  } catch (err) {
+    if (err.code === "ER_DUP_ENTRY") {
+      return res.status(200).json({ success: true, message: "Order already registered in system.", orderId });
+    }
+    console.error("[INSTAGRAM-ORDER] Error:", err.message);
+    return res.status(500).json({ success: false, message: "Failed to save Instagram order. Try again." });
+  }
+});
+
+
+// ======================================================
 // PUBLIC: Validate coupon code
 // ======================================================
 router.post("/validate-coupon", async (req, res) => {

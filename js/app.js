@@ -309,9 +309,7 @@ class VisionThreadApp {
   }
 
   getDeliveryCharge() {
-    const subtotal = this.getCartSubtotal();
-    if (subtotal === 0) return 0;
-    return subtotal >= 499 ? 0 : 50; // Free delivery over ₹499
+    return 0; // Delivery charges discussed individually via Instagram DM
   }
 
   getDiscount() {
@@ -816,10 +814,7 @@ class VisionThreadApp {
         </div>
       `;
       if (subtotalEl) subtotalEl.textContent = '₹0';
-      if (deliveryEl) deliveryEl.textContent = '₹0';
       if (totalEl) totalEl.textContent = '₹0';
-      if (freeShippingText) freeShippingText.textContent = 'Add ₹499 for FREE Delivery!';
-      if (freeShippingBar) freeShippingBar.style.width = '0%';
       return;
     }
 
@@ -827,20 +822,7 @@ class VisionThreadApp {
     const delivery = this.getDeliveryCharge();
     const total = this.getCartTotal();
 
-    // Free shipping threshold ₹499
-    if (freeShippingText && freeShippingBar) {
-      if (subtotal >= 499) {
-        freeShippingText.innerHTML = `🎉 <span class="font-bold text-emerald-600">Congratulations! You unlocked FREE Delivery</span>`;
-        freeShippingBar.style.width = '100%';
-        freeShippingBar.className = 'h-full bg-emerald-500 rounded-full transition-all duration-500';
-      } else {
-        const remaining = 499 - subtotal;
-        const percent = Math.min(100, Math.round((subtotal / 499) * 100));
-        freeShippingText.innerHTML = `Add <span class="font-bold text-pink-600">₹${remaining}</span> more for <span class="font-semibold text-gray-800">FREE Delivery</span>`;
-        freeShippingBar.style.width = `${percent}%`;
-        freeShippingBar.className = 'h-full bg-pink-500 rounded-full transition-all duration-500';
-      }
-    }
+    // Free shipping bar removed
 
     container.innerHTML = this.cart.map((item, idx) => `
       <div class="flex items-center gap-3 p-3 bg-white border border-pink-100 rounded-xl shadow-sm">
@@ -865,8 +847,7 @@ class VisionThreadApp {
     `).join('');
 
     if (subtotalEl) subtotalEl.textContent = `₹${subtotal}`;
-    if (deliveryEl) deliveryEl.textContent = delivery === 0 ? 'FREE' : `₹${delivery}`;
-    if (totalEl) totalEl.textContent = `₹${total}`;
+    if (totalEl) totalEl.textContent = `₹${subtotal}`;
   }
 
   /* -------------------------------------------------------------
@@ -942,7 +923,6 @@ class VisionThreadApp {
     const totEl = document.getElementById('fullCartTotal');
 
     if (sumEl) sumEl.textContent = `₹${subtotal}`;
-    if (delEl) delEl.textContent = delivery === 0 ? 'FREE' : `₹${delivery}`;
     if (discEl) discEl.textContent = `-₹${discount}`;
     if (totEl) totEl.textContent = `₹${total}`;
   }
@@ -1095,7 +1075,6 @@ class VisionThreadApp {
 
     const subtotal = this.getOrderSubtotal();
     if (subtotalEl) subtotalEl.textContent = `₹${subtotal}`;
-    if (deliveryEl) deliveryEl.textContent = 'FREE';
     if (totalEl) totalEl.textContent = `₹${subtotal}`;
   }
 
@@ -1140,9 +1119,9 @@ class VisionThreadApp {
     let orderId = '#VT-' + Math.floor(10000 + Math.random() * 90000);
     let orderSynced = false;
 
-    // Save directly to MySQL database via Backend API
+    // Save directly to database via Instagram-order API endpoint (shows in Admin Panel)
     try {
-      const apiRes = await fetch(`${this.apiBase}/orders`, {
+      const apiRes = await fetch(`${this.apiBase}/instagram-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1175,7 +1154,42 @@ class VisionThreadApp {
         orderSynced = true;
       }
     } catch (err) {
-      console.warn('Backend order sync fallback:', err.message);
+      // Fallback: try /orders endpoint
+      try {
+        const fallbackRes = await fetch(`${this.apiBase}/orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: orderId,
+            customerName: name,
+            customerMobile: cleanPhone.slice(-10),
+            address: address,
+            pincode: pincode,
+            paymentMethod: 'Instagram DM (@vision_thread00)',
+            subtotal: total,
+            deliveryCharge: 0,
+            discount: 0,
+            grandTotal: total,
+            items: items.map(item => ({
+              productCode: item.product.id || '',
+              name: item.product.name,
+              category: item.product.category || 'Handmade',
+              price: item.product.price,
+              quantity: item.quantity,
+              color: item.selectedColor || 'Standard',
+              customNote: item.customNote || '',
+              image: item.product.image || ''
+            }))
+          })
+        });
+        const fbData = await fallbackRes.json();
+        if (fbData && fbData.success) {
+          if (fbData.orderId) orderId = fbData.orderId;
+          orderSynced = true;
+        }
+      } catch (fbErr) {
+        console.warn('Backend order sync fallback:', fbErr.message);
+      }
     }
 
     // Build Instagram DM order text with selected product info & customer details
@@ -1201,7 +1215,7 @@ class VisionThreadApp {
       `🛍️ *Selected Products:*`,
       itemsText,
       ``,
-      `💰 *Total Amount: ₹${total}* (FREE Delivery)`,
+      `💰 *Total Amount: ₹${total}*`,
       ``,
       `👤 *Customer & Delivery Details:*`,
       `• Name: ${name}`,
@@ -1266,7 +1280,7 @@ class VisionThreadApp {
         if (ord.synced) continue; // Already confirmed in MySQL
 
         try {
-          const apiRes = await fetch(`${this.apiBase}/orders`, {
+          const apiRes = await fetch(`${this.apiBase}/instagram-order`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -1393,10 +1407,6 @@ class VisionThreadApp {
               <span>Subtotal</span>
               <span>₹${order.subtotal}</span>
             </div>
-            <div class="flex justify-between text-gray-600 text-xs">
-              <span>Delivery</span>
-              <span>${order.delivery === 0 ? 'FREE' : '₹' + order.delivery}</span>
-            </div>
             ${order.discount ? `
               <div class="flex justify-between text-emerald-600 text-xs">
                 <span>Discount</span>
@@ -1458,8 +1468,7 @@ class VisionThreadApp {
           </table>
           <div style="text-align: right; margin-top: 20px; font-size: 14px;">
             <p>Subtotal: ₹${order.subtotal}</p>
-            <p>Delivery: ${order.delivery === 0 ? 'FREE' : '₹' + order.delivery}</p>
-            <p><strong>Grand Total: ₹${order.total}</strong></p>
+            <p><strong>Total Amount: ₹${order.total}</strong></p>
           </div>
           <p style="text-align: center; font-size: 12px; color: #999; margin-top: 30px;">Thank you for supporting small handmade businesses! Follow us on Instagram @vision_thread00</p>
         </div>
@@ -1667,7 +1676,6 @@ class VisionThreadApp {
       ``,
       `📊 *Order Summary:*`,
       `• Subtotal: ₹${subtotal}`,
-      `• Delivery: ${delivery === 0 ? 'FREE' : '₹' + delivery}`,
     ];
     if (discount > 0) {
       lines.push(`• Discount: -₹${discount}`);
