@@ -1,4 +1,4 @@
-const DATA_VERSION = '2.2'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792593712298'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -37,6 +37,33 @@ const CATEGORIES = [
 
 const DEFAULT_PRODUCTS = [
   {
+    "id": "vt-mvi7oc0n",
+    "dbId": 25,
+    "productCode": "vt-mvi7oc0n",
+    "name": "handmade flower",
+    "category": "Handmade Flowers",
+    "price": 100,
+    "originalPrice": 120,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badge": null,
+    "shortDescription": "handmade",
+    "fullDescription": "",
+    "image": "/uploads/prod_1792593114329_WhatsApp_Image_2026-10-20_at_2_40_09_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792593114329_WhatsApp_Image_2026-10-20_at_2_40_09_PM.jpeg",
+    "gallery": [
+      "/uploads/prod_1792593114329_WhatsApp_Image_2026-10-20_at_2_40_09_PM.jpeg"
+    ],
+    "colors": [
+      "Pink",
+      "White"
+    ],
+    "customizable": true,
+    "inStock": true,
+    "createdAt": "2026-10-21T14:32:26.000Z",
+    "updatedAt": "2026-10-21T14:32:26.000Z"
+  },
+  {
     "id": "vt-01",
     "dbId": 1,
     "productCode": "vt-01",
@@ -50,19 +77,18 @@ const DEFAULT_PRODUCTS = [
     "shortDescription": "Delicate handmade lilies crafted with velvety chenille pipe cleaners and ribbon wraps.",
     "fullDescription": "Handcrafted with intricate love and patience, this Pink & Purple Lily Bouquet is an everlasting floral treasure.",
     "image": "/uploads/prod_1791566944633_WhatsApp_Image_2026-08-15_at_12_28_43_PM__2_.jpeg",
+    "relativeImage": "/uploads/prod_1791566944633_WhatsApp_Image_2026-08-15_at_12_28_43_PM__2_.jpeg",
     "gallery": [
       "/uploads/prod_1791566944633_WhatsApp_Image_2026-08-15_at_12_28_43_PM__2_.jpeg"
     ],
     "colors": [
-      "Pink & Lilac",
-      "Blush Pink",
-      "Pure Purple",
-      "Pastel Mix"
+      "Pink",
+      "White"
     ],
-    "materials": "High density velvet pipe cleaners, floral wire stem",
-    "dimensions": "Height: 30cm, Width: 18cm",
     "customizable": true,
-    "inStock": true
+    "inStock": true,
+    "createdAt": "2026-10-09T15:49:37.000Z",
+    "updatedAt": "2026-10-20T11:00:10.000Z"
   },
   {
     "id": "vt-02",
@@ -78,14 +104,18 @@ const DEFAULT_PRODUCTS = [
     "shortDescription": "Charming single-stem handmade rose or tulip wrapped with Korean aesthetic paper.",
     "fullDescription": "A minimalist yet profoundly sweet token of affection.",
     "image": "/uploads/prod_1792489207816_WhatsApp_Image_2026-10-20_at_2_39_54_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792489207816_WhatsApp_Image_2026-10-20_at_2_39_54_PM.jpeg",
     "gallery": [
       "/uploads/prod_1792489207816_WhatsApp_Image_2026-10-20_at_2_39_54_PM.jpeg"
     ],
-    "colors": [],
-    "materials": "Chenille craft stem, floral tape, cellophane wrap",
-    "dimensions": "Height: 28cm, Width: 12cm",
+    "colors": [
+      "Pink",
+      "White"
+    ],
     "customizable": true,
-    "inStock": true
+    "inStock": true,
+    "createdAt": "2026-10-09T15:49:37.000Z",
+    "updatedAt": "2026-10-20T11:00:10.000Z"
   },
   {
     "id": "vt-05",
@@ -101,17 +131,18 @@ const DEFAULT_PRODUCTS = [
     "shortDescription": "Traditional fragrant-looking Frangipani / Chafa flower, perfect for hair buns & puja decor.",
     "fullDescription": "Lovingly styled after the revered Indian Champa / Chafa (Plumeria) flower.",
     "image": "/uploads/prod_1792489385502_WhatsApp_Image_2026-10-20_at_2_40_17_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792489385502_WhatsApp_Image_2026-10-20_at_2_40_17_PM.jpeg",
     "gallery": [
       "/uploads/prod_1792489385502_WhatsApp_Image_2026-10-20_at_2_40_17_PM.jpeg"
     ],
     "colors": [
-      "Classic White & Yellow",
-      "Blush Pink & Peach"
+      "Pink",
+      "White"
     ],
-    "materials": "Craft foam & chenille petal blend",
-    "dimensions": "Diameter: 6.5cm",
     "customizable": true,
-    "inStock": true
+    "inStock": true,
+    "createdAt": "2026-10-09T15:49:37.000Z",
+    "updatedAt": "2026-10-20T11:00:10.000Z"
   },
   {
     "id": "vt-06",
@@ -127,17 +158,18 @@ const DEFAULT_PRODUCTS = [
     "shortDescription": "Graceful floral garland (haar) crafted for home mandirs, photo frames, or Ganpati decor.",
     "fullDescription": "An everlasting, eco-friendly garland crafted with soft colorful pipe cleaner blossoms.",
     "image": "/uploads/prod_1792489483786_WhatsApp_Image_2026-10-20_at_2_40_15_PM__1_.jpeg",
+    "relativeImage": "/uploads/prod_1792489483786_WhatsApp_Image_2026-10-20_at_2_40_15_PM__1_.jpeg",
     "gallery": [
       "/uploads/prod_1792489483786_WhatsApp_Image_2026-10-20_at_2_40_15_PM__1_.jpeg"
     ],
     "colors": [
-      "Marigold Orange & Red",
-      "Rose Pink & White"
+      "Pink",
+      "White"
     ],
-    "materials": "Premium chenille pipe cleaners, golden spacer beads/ all available in all colours",
-    "dimensions": "Length: 45cm (adjustable)",
     "customizable": true,
-    "inStock": true
+    "inStock": true,
+    "createdAt": "2026-10-09T15:49:37.000Z",
+    "updatedAt": "2026-10-20T11:00:10.000Z"
   },
   {
     "id": "vt-07",
@@ -153,18 +185,18 @@ const DEFAULT_PRODUCTS = [
     "shortDescription": "Snag-free elastic scrunchie hair tie adorned with handmade miniature floral or bow charm.",
     "fullDescription": "Treat your hair to soft, stylish luxury!",
     "image": "/uploads/prod_1792490041199_WhatsApp_Image_2026-10-20_at_2_40_14_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792490041199_WhatsApp_Image_2026-10-20_at_2_40_14_PM.jpeg",
     "gallery": [
       "/uploads/prod_1792490041199_WhatsApp_Image_2026-10-20_at_2_40_14_PM.jpeg"
     ],
     "colors": [
-      "Dusty Rose Pink",
-      "Mint Green",
-      "Lilac Dream"
+      "Pink",
+      "White"
     ],
-    "materials": "Seamless stretch elastic band, chenille floral accent",
-    "dimensions": "Diameter: 8cm",
     "customizable": true,
-    "inStock": true
+    "inStock": true,
+    "createdAt": "2026-10-09T15:49:37.000Z",
+    "updatedAt": "2026-10-20T11:00:10.000Z"
   },
   {
     "id": "vt-08",
@@ -180,18 +212,18 @@ const DEFAULT_PRODUCTS = [
     "shortDescription": "Aesthetic alligator hair clip decorated with handcrafted fluffy blooms and pearls.",
     "fullDescription": "Step up your aesthetic hairdo!",
     "image": "/uploads/prod_1792490176747_WhatsApp_Image_2026-10-20_at_2_40_08_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792490176747_WhatsApp_Image_2026-10-20_at_2_40_08_PM.jpeg",
     "gallery": [
       "/uploads/prod_1792490176747_WhatsApp_Image_2026-10-20_at_2_40_08_PM.jpeg"
     ],
     "colors": [
-      "Blush Pink Blossom",
-      "Sky Blue Daisy",
-      "Vintage Mauve"
+      "Pink",
+      "White"
     ],
-    "materials": "Gold-finish alloy clip, grosgrain ribbon",
-    "dimensions": "Length: 6cm, Width: 3.5cm",
     "customizable": true,
-    "inStock": true
+    "inStock": true,
+    "createdAt": "2026-10-09T15:49:37.000Z",
+    "updatedAt": "2026-10-20T11:00:10.000Z"
   },
   {
     "id": "vt-09",
@@ -207,17 +239,18 @@ const DEFAULT_PRODUCTS = [
     "shortDescription": "Comfortable flexible headband wrapped in satin and adorned with vibrant 3D flowers.",
     "fullDescription": "Designed for painless all-day wear!",
     "image": "/uploads/prod_1792490230105_WhatsApp_Image_2026-10-20_at_2_40_08_PM__1_.jpeg",
+    "relativeImage": "/uploads/prod_1792490230105_WhatsApp_Image_2026-10-20_at_2_40_08_PM__1_.jpeg",
     "gallery": [
       "/uploads/prod_1792490230105_WhatsApp_Image_2026-10-20_at_2_40_08_PM__1_.jpeg"
     ],
     "colors": [
-      "Pastel Multi-Flower",
-      "Princess Pink & Pearls"
+      "Pink",
+      "White"
     ],
-    "materials": "Flexible resin headband, satin wrap",
-    "dimensions": "One size fits all (flexible)",
     "customizable": true,
-    "inStock": true
+    "inStock": true,
+    "createdAt": "2026-10-09T15:49:37.000Z",
+    "updatedAt": "2026-10-20T11:00:10.000Z"
   },
   {
     "id": "vt-10",
@@ -233,17 +266,18 @@ const DEFAULT_PRODUCTS = [
     "shortDescription": "Regal handcrafted peacock charm with emerald and royal blue feather plumes.",
     "fullDescription": "A dazzling miniature masterpiece for your keys, handbag, or backpack.",
     "image": "/uploads/prod_1792490324018_WhatsApp_Image_2026-10-20_at_2_40_07_PM__1_.jpeg",
+    "relativeImage": "/uploads/prod_1792490324018_WhatsApp_Image_2026-10-20_at_2_40_07_PM__1_.jpeg",
     "gallery": [
       "/uploads/prod_1792490324018_WhatsApp_Image_2026-10-20_at_2_40_07_PM__1_.jpeg"
     ],
     "colors": [
-      "Royal Peacock (Blue & Green)",
-      "Rose Gold Peacock"
+      "Pink",
+      "White"
     ],
-    "materials": "Metallic craft thread, chenille wire, brass keyring",
-    "dimensions": "Length: 11cm including chain",
     "customizable": true,
-    "inStock": true
+    "inStock": true,
+    "createdAt": "2026-10-09T15:49:37.000Z",
+    "updatedAt": "2026-10-20T11:00:10.000Z"
   },
   {
     "id": "vt-11",
@@ -259,17 +293,18 @@ const DEFAULT_PRODUCTS = [
     "shortDescription": "Traditional handcrafted door hanging with marigolds, mango leaves, and brass bells.",
     "fullDescription": "Welcome prosperity and warmth into your home!",
     "image": "/uploads/prod_1792489619212_WhatsApp_Image_2026-10-20_at_2_40_16_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792489619212_WhatsApp_Image_2026-10-20_at_2_40_16_PM.jpeg",
     "gallery": [
       "/uploads/prod_1792489619212_WhatsApp_Image_2026-10-20_at_2_40_16_PM.jpeg"
     ],
     "colors": [
-      "Marigold Yellow & Orange",
-      "Festive Red & Gold"
+      "Pink",
+      "White"
     ],
-    "materials": "Hand-shaped chenille floral accents, golden gota patti",
-    "dimensions": "Standard 3-foot doorway width (90cm)",
     "customizable": true,
-    "inStock": true
+    "inStock": true,
+    "createdAt": "2026-10-09T15:49:37.000Z",
+    "updatedAt": "2026-10-20T11:00:10.000Z"
   },
   {
     "id": "vt-12",
@@ -285,18 +320,18 @@ const DEFAULT_PRODUCTS = [
     "shortDescription": "Curated luxury craft box: mini bouquet, hair accessories, custom keychain & sweet note.",
     "fullDescription": "The ultimate bespoke gifting experience!",
     "image": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80",
+    "relativeImage": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80",
     "gallery": [
       "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80"
     ],
     "colors": [
-      "Pastel Pink Blossom",
-      "Royal Lavender",
-      "Golden Sunflower"
+      "Pink",
+      "White"
     ],
-    "materials": "Rigid kraft gift box, shredded wood bedding, satin ribbon",
-    "dimensions": "Box: 25cm x 20cm x 10cm",
     "customizable": true,
-    "inStock": true
+    "inStock": true,
+    "createdAt": "2026-10-09T15:49:37.000Z",
+    "updatedAt": "2026-10-09T15:49:37.000Z"
   }
 ];
 

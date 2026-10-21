@@ -43,19 +43,33 @@ const upload = multer({
 });
 
 let catalogVersion = Date.now().toString(36);
+const jsProductsFilePath = path.join(__dirname, "../../js/products.js");
 const cacheFilePath = path.join(__dirname, "../data/products_cache.json");
 
 function saveProductsToFileCache(products) {
+  const targetPath = process.env.VERCEL
+    ? path.join("/tmp", "products_cache.json")
+    : cacheFilePath;
   try {
-    const dir = path.dirname(cacheFilePath);
+    const dir = path.dirname(targetPath);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(cacheFilePath, JSON.stringify(products, null, 2), "utf8");
+    fs.writeFileSync(targetPath, JSON.stringify(products, null, 2), "utf8");
   } catch (e) {
     console.warn("[PRODUCTS] Failed to write cache file:", e.message);
   }
 }
 
 function readProductsFromFileCache() {
+  if (process.env.VERCEL) {
+    const tmpPath = path.join("/tmp", "products_cache.json");
+    try {
+      if (fs.existsSync(tmpPath)) {
+        const raw = fs.readFileSync(tmpPath, "utf8");
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+  }
   try {
     if (fs.existsSync(cacheFilePath)) {
       const raw = fs.readFileSync(cacheFilePath, "utf8");
@@ -68,6 +82,64 @@ function readProductsFromFileCache() {
   return [];
 }
 
+function syncCatalogFiles(products) {
+  saveProductsToFileCache(products);
+
+  if (!process.env.VERCEL) {
+    try {
+      if (fs.existsSync(jsProductsFilePath)) {
+        let content = fs.readFileSync(jsProductsFilePath, "utf8");
+        const newVersion = Date.now().toString();
+        content = content.replace(/const DATA_VERSION\s*=\s*['"][^'"]*['"];/, `const DATA_VERSION = '${newVersion}';`);
+        const jsonProducts = JSON.stringify(products, null, 2);
+        const regex = /const DEFAULT_PRODUCTS\s*=\s*\[[\s\S]*?\];\s*(window\.getVtApiBase)/;
+        if (regex.test(content)) {
+          content = content.replace(regex, `const DEFAULT_PRODUCTS = ${jsonProducts};\n\n$1`);
+          fs.writeFileSync(jsProductsFilePath, content, "utf8");
+          console.log("[PRODUCTS] ✅ Synchronized js/products.js (Version: " + newVersion + ", Products: " + products.length + ")");
+        }
+      }
+    } catch (e) {
+      console.warn("[PRODUCTS] Could not update js/products.js:", e.message);
+    }
+  }
+}
+
+let isDeploying = false;
+let deployQueued = false;
+
+function triggerAutoGitDeploy(reason = "Product catalog update") {
+  if (process.env.VERCEL) return;
+  if (isDeploying) {
+    deployQueued = true;
+    return;
+  }
+  isDeploying = true;
+  deployQueued = false;
+
+  const { exec } = require("child_process");
+  const rootDir = path.resolve(__dirname, "../..");
+  const safeReason = (reason || "Product catalog update").replace(/["`$]/g, "").slice(0, 80);
+  const cmd = `git add backend/data/products_cache.json js/products.js backend/uploads && git commit -m "Auto-deploy: ${safeReason} [auto-sync]" && git push origin main`;
+
+  console.log(`[AUTO-DEPLOY] 🚀 Deploying updates to GitHub & Vercel (${safeReason})...`);
+  exec(cmd, { cwd: rootDir }, (err, stdout, stderr) => {
+    isDeploying = false;
+    if (err) {
+      if (err.message && err.message.includes("nothing to commit")) {
+        console.log("[AUTO-DEPLOY] No git changes to commit.");
+      } else {
+        console.warn("[AUTO-DEPLOY] Git push warning:", err.message);
+      }
+    } else {
+      console.log("[AUTO-DEPLOY] ✅ Pushed to GitHub successfully! Vercel is building the update.");
+    }
+    if (deployQueued) {
+      triggerAutoGitDeploy("Queued updates");
+    }
+  });
+}
+
 async function getCatalogVersionFromDb() {
   try {
     const [[countRow]] = await db.execute("SELECT COUNT(*) as total, UNIX_TIMESTAMP(MAX(updated_at)) as max_updated, UNIX_TIMESTAMP(MAX(created_at)) as max_created FROM products");
@@ -76,10 +148,9 @@ async function getCatalogVersionFromDb() {
       return { version: catalogVersion, total: countRow.total, lastUpdated: countRow.max_updated || countRow.max_created };
     }
   } catch (err) {
-    // If DB offline, fallback to in-memory/cache count
     const cached = readProductsFromFileCache();
     if (cached.length > 0) {
-      catalogVersion = `v${cached.length}_cache`;
+      catalogVersion = `v${cached.length}_cache_${Date.now()}`;
       return { version: catalogVersion, total: cached.length, lastUpdated: null };
     }
   }
@@ -230,19 +301,40 @@ router.get("/admin/all", authenticateAdmin, async (req, res) => {
     sql += " ORDER BY created_at DESC LIMIT ? OFFSET ?";
     params.push(parseInt(limit), offset);
 
-    const [[countRow], [rows]] = await Promise.all([
-      db.execute(countSql, countParams),
-      db.execute(sql, params),
-    ]);
+    try {
+      const [[countRow], [rows]] = await Promise.all([
+        db.execute(countSql, countParams),
+        db.execute(sql, params),
+      ]);
 
-    return res.json({
-      success: true,
-      catalogVersion,
-      products: rows.map(r => formatProduct(r, req)),
-      total: countRow[0].total,
-      page: parseInt(page),
-      pages: Math.ceil(countRow[0].total / parseInt(limit)) || 1,
-    });
+      return res.json({
+        success: true,
+        catalogVersion,
+        products: rows.map(r => formatProduct(r, req)),
+        total: countRow[0].total,
+        page: parseInt(page),
+        pages: Math.ceil(countRow[0].total / parseInt(limit)) || 1,
+      });
+    } catch (dbErr) {
+      console.warn("[ADMIN-PRODUCTS] DB unavailable, serving cache:", dbErr.message);
+      let cached = readProductsFromFileCache();
+      if (search) {
+        const q = search.toLowerCase();
+        cached = cached.filter(p => (p.name && p.name.toLowerCase().includes(q)) || (p.productCode && p.productCode.toLowerCase().includes(q)));
+      }
+      if (category && category !== "all") {
+        cached = cached.filter(p => p.category && p.category.toLowerCase() === category.toLowerCase());
+      }
+      return res.json({
+        success: true,
+        catalogVersion,
+        products: cached.slice(offset, offset + parseInt(limit)),
+        total: cached.length,
+        page: parseInt(page),
+        pages: Math.ceil(cached.length / parseInt(limit)) || 1,
+        fromCache: true,
+      });
+    }
   } catch (err) {
     return res.status(500).json({ success: false, message: "Server error." });
   }
@@ -265,6 +357,10 @@ router.post(
     const code = "vt-" + Date.now().toString(36);
     const cleanImg = sanitizeImageUrlForDb(imageUrl);
     const cleanGallery = (gallery && Array.isArray(gallery) && gallery.length > 0 ? gallery : (cleanImg ? [cleanImg] : [])).map(sanitizeImageUrlForDb);
+    const cleanColors = (colors && Array.isArray(colors) && colors.length > 0) ? colors : ["Pink", "White"];
+
+    let newProduct = null;
+    let allProducts = [];
 
     try {
       const [result] = await db.execute(
@@ -274,26 +370,56 @@ router.post(
           code, name, category, parseFloat(price), originalPrice ? parseFloat(originalPrice) : null,
           badge || null, shortDesc || "", fullDesc || "", cleanImg,
           JSON.stringify(cleanGallery),
-          JSON.stringify(colors || ["Pink", "White"]),
+          JSON.stringify(cleanColors),
           materials || "", dimensions || "",
           customizable !== false ? 1 : 0, inStock !== false ? 1 : 0,
         ]
       );
-      const vInfo = await getCatalogVersionFromDb();
       const [rows] = await db.execute("SELECT * FROM products WHERE id = ?", [result.insertId]);
+      newProduct = formatProduct(rows[0], req);
       const [allRows] = await db.execute("SELECT * FROM products ORDER BY in_stock DESC, created_at DESC");
-      saveProductsToFileCache(allRows.map(r => formatProduct(r, req)));
-
-      return res.status(201).json({
-        success: true,
-        message: "Product added successfully!",
-        catalogVersion: vInfo.version,
-        product: formatProduct(rows[0], req),
-      });
+      allProducts = allRows.map(r => formatProduct(r, req));
     } catch (err) {
       if (err.code === "ER_DUP_ENTRY") return res.status(400).json({ success: false, message: "Product code already exists." });
-      return res.status(500).json({ success: false, message: "Server error." });
+      console.warn("[PRODUCT-ADD] DB unavailable, saving to cache store:", err.message);
+      newProduct = {
+        id: code,
+        dbId: Date.now(),
+        productCode: code,
+        name,
+        category,
+        price: parseFloat(price),
+        originalPrice: originalPrice ? parseFloat(originalPrice) : null,
+        rating: 5.0,
+        reviewsCount: 0,
+        badge: badge || null,
+        shortDescription: shortDesc || "",
+        fullDescription: fullDesc || "",
+        image: cleanImg,
+        relativeImage: cleanImg,
+        gallery: cleanGallery,
+        colors: cleanColors,
+        materials: materials || "",
+        dimensions: dimensions || "",
+        customizable: customizable !== false,
+        inStock: inStock !== false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const existing = readProductsFromFileCache();
+      allProducts = [newProduct, ...existing];
     }
+
+    syncCatalogFiles(allProducts);
+    triggerAutoGitDeploy(`Add product: ${name}`);
+    const vInfo = await getCatalogVersionFromDb();
+
+    return res.status(201).json({
+      success: true,
+      message: "Product added successfully! Changes are syncing with live website.",
+      catalogVersion: vInfo.version,
+      product: newProduct,
+    });
   }
 );
 
@@ -331,20 +457,20 @@ router.patch("/admin/:id/image", authenticateAdmin, async (req, res) => {
     return res.status(400).json({ success: false, message: "Image URL or path is required." });
   }
 
+  const idParam = req.params.id;
+  const numId = !isNaN(idParam) ? parseInt(idParam, 10) : 0;
+  const cleanImg = sanitizeImageUrlForDb(imageUrl);
+  let updatedProduct = null;
+  let allProducts = [];
+
   try {
-    const idParam = req.params.id;
-    const numId = !isNaN(idParam) ? parseInt(idParam, 10) : 0;
     const [existing] = await db.execute(
       "SELECT * FROM products WHERE id = ? OR product_code = ? LIMIT 1",
       [numId, idParam]
     );
-    if (existing.length === 0) {
-      return res.status(404).json({ success: false, message: "Product not found." });
-    }
-
+    if (existing.length === 0) return res.status(404).json({ success: false, message: "Product not found." });
     const current = existing[0];
     const actualDbId = current.id;
-    const cleanImg = sanitizeImageUrlForDb(imageUrl);
 
     let gallery = safeJSON(current.gallery_json, []);
     gallery = Array.isArray(gallery) ? gallery.map(sanitizeImageUrlForDb) : [];
@@ -357,30 +483,44 @@ router.patch("/admin/:id/image", authenticateAdmin, async (req, res) => {
       [cleanImg, JSON.stringify(gallery), actualDbId]
     );
 
-    const vInfo = await getCatalogVersionFromDb();
     const [rows] = await db.execute("SELECT * FROM products WHERE id = ?", [actualDbId]);
+    updatedProduct = formatProduct(rows[0], req);
     const [allRows] = await db.execute("SELECT * FROM products ORDER BY in_stock DESC, created_at DESC");
-    saveProductsToFileCache(allRows.map(r => formatProduct(r, req)));
-
-    return res.json({
-      success: true,
-      message: "Product image updated successfully!",
-      catalogVersion: vInfo.version,
-      product: formatProduct(rows[0], req),
-    });
+    allProducts = allRows.map(r => formatProduct(r, req));
   } catch (err) {
-    console.error("[PRODUCT-IMAGE-UPDATE] Error:", err.message);
-    return res.status(500).json({ success: false, message: "Server error while updating image." });
+    console.warn("[PRODUCT-IMAGE-UPDATE] DB unavailable, updating image in cache store:", err.message);
+    const existing = readProductsFromFileCache();
+    const idx = existing.findIndex(p => p.id === idParam || p.productCode === idParam || String(p.dbId) === String(idParam));
+    if (idx === -1) return res.status(404).json({ success: false, message: "Product not found." });
+    existing[idx].image = cleanImg;
+    existing[idx].relativeImage = cleanImg;
+    existing[idx].gallery = [cleanImg, ...(existing[idx].gallery || []).filter(g => g !== cleanImg)];
+    existing[idx].updatedAt = new Date().toISOString();
+    updatedProduct = existing[idx];
+    allProducts = existing;
   }
+
+  syncCatalogFiles(allProducts);
+  triggerAutoGitDeploy(`Update image for product ${idParam}`);
+  const vInfo = await getCatalogVersionFromDb();
+
+  return res.json({
+    success: true,
+    message: "Product image updated successfully! Syncing with live website.",
+    catalogVersion: vInfo.version,
+    product: updatedProduct,
+  });
 });
 
 // PUT /api/products/admin/:id - Update product
 router.put("/admin/:id", authenticateAdmin, async (req, res) => {
   const { name, category, price, originalPrice, badge, shortDesc, fullDesc, imageUrl, gallery, colors, materials, dimensions, customizable, inStock } = req.body;
-  try {
-    const idParam = req.params.id;
-    const numId = !isNaN(idParam) ? parseInt(idParam, 10) : 0;
+  const idParam = req.params.id;
+  const numId = !isNaN(idParam) ? parseInt(idParam, 10) : 0;
+  let updatedProduct = null;
+  let allProducts = [];
 
+  try {
     const [existing] = await db.execute(
       "SELECT * FROM products WHERE id = ? OR product_code = ? LIMIT 1",
       [numId, idParam]
@@ -414,42 +554,100 @@ router.put("/admin/:id", authenticateAdmin, async (req, res) => {
       ]
     );
 
-    const vInfo = await getCatalogVersionFromDb();
     const [rows] = await db.execute("SELECT * FROM products WHERE id = ?", [actualDbId]);
+    updatedProduct = formatProduct(rows[0], req);
     const [allRows] = await db.execute("SELECT * FROM products ORDER BY in_stock DESC, created_at DESC");
-    saveProductsToFileCache(allRows.map(r => formatProduct(r, req)));
-
-    return res.json({
-      success: true,
-      message: "Product updated successfully!",
-      catalogVersion: vInfo.version,
-      product: formatProduct(rows[0], req),
-    });
+    allProducts = allRows.map(r => formatProduct(r, req));
   } catch (err) {
-    console.error("[PRODUCT-UPDATE] Error:", err.message);
-    return res.status(500).json({ success: false, message: "Server error." });
+    console.warn("[PRODUCT-UPDATE] DB unavailable, updating in cache store:", err.message);
+    const existing = readProductsFromFileCache();
+    const idx = existing.findIndex(p => p.id === idParam || p.productCode === idParam || String(p.dbId) === String(idParam));
+    if (idx === -1) return res.status(404).json({ success: false, message: "Product not found." });
+
+    const cleanImg = imageUrl ? sanitizeImageUrlForDb(imageUrl) : existing[idx].image;
+    existing[idx] = {
+      ...existing[idx],
+      name: name || existing[idx].name,
+      category: category || existing[idx].category,
+      price: price !== undefined ? parseFloat(price) : existing[idx].price,
+      originalPrice: originalPrice ? parseFloat(originalPrice) : existing[idx].originalPrice,
+      badge: badge !== undefined ? badge : existing[idx].badge,
+      shortDescription: shortDesc !== undefined ? shortDesc : existing[idx].shortDescription,
+      fullDescription: fullDesc !== undefined ? fullDesc : existing[idx].fullDescription,
+      image: cleanImg,
+      relativeImage: cleanImg,
+      gallery: gallery || (cleanImg ? [cleanImg] : existing[idx].gallery),
+      colors: colors || existing[idx].colors,
+      materials: materials !== undefined ? materials : existing[idx].materials,
+      dimensions: dimensions !== undefined ? dimensions : existing[idx].dimensions,
+      customizable: customizable !== undefined ? !!customizable : existing[idx].customizable,
+      inStock: inStock !== undefined ? !!inStock : existing[idx].inStock,
+      updatedAt: new Date().toISOString(),
+    };
+    updatedProduct = existing[idx];
+    allProducts = existing;
   }
+
+  syncCatalogFiles(allProducts);
+  triggerAutoGitDeploy(`Update product: ${name || idParam}`);
+  const vInfo = await getCatalogVersionFromDb();
+
+  return res.json({
+    success: true,
+    message: "Product updated successfully! Changes are syncing with live website.",
+    catalogVersion: vInfo.version,
+    product: updatedProduct,
+  });
 });
 
 // DELETE /api/products/admin/:id - Delete product
 router.delete("/admin/:id", authenticateAdmin, async (req, res) => {
+  const idParam = req.params.id;
+  const numId = !isNaN(idParam) ? parseInt(idParam, 10) : 0;
+  let allProducts = [];
+
   try {
-    const idParam = req.params.id;
-    const numId = !isNaN(idParam) ? parseInt(idParam, 10) : 0;
     const [result] = await db.execute("DELETE FROM products WHERE id = ? OR product_code = ?", [numId, idParam]);
-    if (result.affectedRows === 0) return res.status(404).json({ success: false, message: "Product not found." });
-    
-    const vInfo = await getCatalogVersionFromDb();
     const [allRows] = await db.execute("SELECT * FROM products ORDER BY in_stock DESC, created_at DESC");
-    saveProductsToFileCache(allRows.map(r => formatProduct(r, req)));
+    allProducts = allRows.map(r => formatProduct(r, req));
+  } catch (err) {
+    console.warn("[PRODUCT-DELETE] DB unavailable, deleting from cache store:", err.message);
+    const existing = readProductsFromFileCache();
+    allProducts = existing.filter(p => p.id !== idParam && p.productCode !== idParam && String(p.dbId) !== String(idParam));
+  }
+
+  syncCatalogFiles(allProducts);
+  triggerAutoGitDeploy(`Delete product: ${idParam}`);
+  const vInfo = await getCatalogVersionFromDb();
+
+  return res.json({
+    success: true,
+    message: "Product deleted successfully. Live website is updating.",
+    catalogVersion: vInfo.version,
+  });
+});
+
+// POST /api/products/admin/sync-vercel - Manual sync & deploy trigger
+router.post("/admin/sync-vercel", authenticateAdmin, async (req, res) => {
+  try {
+    let allProducts = [];
+    try {
+      const [allRows] = await db.execute("SELECT * FROM products ORDER BY in_stock DESC, created_at DESC");
+      allProducts = allRows.map(r => formatProduct(r, req));
+    } catch (e) {
+      allProducts = readProductsFromFileCache();
+    }
+
+    syncCatalogFiles(allProducts);
+    triggerAutoGitDeploy("Manual sync requested from Admin Panel");
 
     return res.json({
       success: true,
-      message: "Product deleted successfully.",
-      catalogVersion: vInfo.version,
+      message: "Catalog synchronized! Changes pushed to GitHub; Vercel is building the latest update.",
+      totalProducts: allProducts.length,
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: "Server error." });
+    return res.status(500).json({ success: false, message: "Sync error: " + err.message });
   }
 });
 

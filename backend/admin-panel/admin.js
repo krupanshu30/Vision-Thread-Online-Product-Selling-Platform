@@ -613,7 +613,7 @@ document.getElementById("productForm").addEventListener("submit", async (e) => {
   submitBtn.textContent = origBtnText;
 
   if (ok) {
-    showToast(id ? "Product updated successfully!" : "Product added successfully!", "success");
+    showToast((id ? "Product updated! " : "Product added! ") + "Syncing with live website on Vercel... 🚀", "success");
     closeProductModal();
     loadProducts(currentPage.products);
     try {
@@ -631,12 +631,26 @@ async function deleteProduct(id) {
   if (!confirm("Delete this product? This cannot be undone.")) return;
   const { ok } = await apiCall("DELETE", "/products/admin/" + id);
   if (ok) {
-    showToast("Product deleted.", "success");
+    showToast("Product deleted. Syncing with live website on Vercel... 🚀", "success");
     loadProducts(currentPage.products);
     try {
       localStorage.setItem("vt_catalog_sync", Date.now().toString());
       window.dispatchEvent(new CustomEvent("vt:catalog-updated"));
     } catch (e) {}
+  }
+}
+
+async function syncWithVercel() {
+  const btn = document.getElementById("btnSyncVercel");
+  const origText = btn ? btn.innerHTML : "";
+  if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Deploying..."; }
+  showToast("Syncing catalog with GitHub and triggering Vercel build... 🚀", "info");
+  const { ok, data } = await apiCall("POST", "/products/admin/sync-vercel");
+  if (btn) { btn.disabled = false; btn.innerHTML = origText; }
+  if (ok) {
+    showToast("🚀 Deployed! Vercel is now updating your live website (ready in ~15s).", "success");
+  } else {
+    showToast(data?.message || "Deploy sync failed. Check connection.", "error");
   }
 }
 
