@@ -20,7 +20,15 @@
       "dest": "/api/index.js"
     },
     {
-      "src": "/(css|js|images)/(.*)",
+      "src": "/js/(.*)",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/css/(.*)",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/(css|images)/(.*)",
       "dest": "/$1/$2"
     },
     {

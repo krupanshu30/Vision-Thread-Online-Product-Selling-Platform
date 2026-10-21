@@ -57,13 +57,25 @@ app.use(cors({
 }));
 app.options("*", cors());
 
-// Anti-caching headers for storefront HTML and JS to ensure all mobile updates appear immediately
+// Anti-caching headers for storefront HTML and JS to ensure all mobile/device updates appear immediately
 app.use((req, res, next) => {
-  if (req.path.endsWith(".html") || req.path === "/" || req.path.endsWith(".js") || req.path.startsWith("/api/")) {
+  const path_ = req.path;
+  if (path_ === '/' || path_.endsWith('.html')) {
     res.set({
-      "Cache-Control": "no-cache, no-store, must-revalidate",
-      "Pragma": "no-cache",
-      "Expires": "0",
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    });
+  } else if (path_.endsWith('.js') || path_.startsWith('/api/')) {
+    // Extra aggressive for products.js and API endpoints:
+    // Surrogate-Control kills Vercel's CDN/edge cache between deployments
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store',
+      'CDN-Cache-Control': 'no-store',
+      'Vercel-CDN-Cache-Control': 'no-store',
     });
   }
   next();
@@ -100,7 +112,19 @@ app.use("/api", orderRoutes);
 // Serve Static Files, Customer Storefront & Admin Panel
 // ============================================================
 app.use("/css", express.static(path.join(__dirname, "../css")));
-app.use("/js", express.static(path.join(__dirname, "../js")));
+// Serve JS files with no-cache to ensure product updates appear immediately across all devices
+app.use("/js", express.static(path.join(__dirname, "../js"), {
+  maxAge: 0,
+  etag: false,
+  lastModified: false,
+  setHeaders: (res) => {
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
+    res.set('Vercel-CDN-Cache-Control', 'no-store');
+  }
+}));
 app.use("/images", express.static(path.join(__dirname, "../images")));
 app.use("/admin/images", express.static(path.join(__dirname, "../images")));
 app.use("/admin", express.static(path.join(__dirname, "admin-panel")));

@@ -84,7 +84,21 @@ function readProductsFromFileCache() {
 }
 
 // In-memory product cache - serves as fast fallback when DB or file are unavailable
-let _memProductsCache = [];
+// Pre-warm from committed cache file on startup (critical for Vercel cold starts)
+let _memProductsCache = (function() {
+  try {
+    if (fs.existsSync(cacheFilePath)) {
+      const raw = fs.readFileSync(cacheFilePath, 'utf8');
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        console.log(`[PRODUCTS] Pre-warmed in-memory cache with ${parsed.length} products from committed cache file.`);
+        return parsed;
+      }
+    }
+  } catch (e) {}
+  return [];
+})();
+
 
 function syncCatalogFiles(products) {
   if (!Array.isArray(products) || products.length === 0) return;
