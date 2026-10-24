@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792853011873'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792853073119'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -389,10 +389,10 @@ const DEFAULT_PRODUCTS = [
     "id": "vt-12",
     "dbId": 12,
     "productCode": "vt-12",
-    "name": "Handmade Gift Hamper",
-    "category": "Gifts & Hampers",
-    "price": 850,
-    "originalPrice": 1200,
+    "name": "Handmade flower keychain",
+    "category": "Keychains",
+    "price": 50,
+    "originalPrice": 100,
     "rating": 5,
     "reviewsCount": 60,
     "badge": "Ultimate Gift",
@@ -413,7 +413,7 @@ const DEFAULT_PRODUCTS = [
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
-    "updatedAt": "2026-10-21T14:48:11.000Z"
+    "updatedAt": "2026-10-24T14:44:33.000Z"
   }
 ];
 
