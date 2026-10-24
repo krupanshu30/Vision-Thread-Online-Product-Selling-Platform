@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792853073119'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792853222014'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -36,6 +36,35 @@ const CATEGORIES = [
 ];
 
 const DEFAULT_PRODUCTS = [
+  {
+    "id": "vt-mvmiinot",
+    "dbId": 28,
+    "productCode": "vt-mvmiinot",
+    "name": "Rangoli Door mat",
+    "category": "Home Decor",
+    "price": 250,
+    "originalPrice": 287,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badge": null,
+    "shortDescription": "home decor rangoli",
+    "fullDescription": "",
+    "image": "/uploads/prod_1792853147217_WhatsApp_Image_2026-10-20_at_2_40_15_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792853147217_WhatsApp_Image_2026-10-20_at_2_40_15_PM.jpeg",
+    "gallery": [
+      "/uploads/prod_1792853147217_WhatsApp_Image_2026-10-20_at_2_40_15_PM.jpeg"
+    ],
+    "colors": [
+      "Pink",
+      "White"
+    ],
+    "materials": "",
+    "dimensions": "",
+    "customizable": true,
+    "inStock": true,
+    "createdAt": "2026-10-24T14:47:02.000Z",
+    "updatedAt": "2026-10-24T14:47:02.000Z"
+  },
   {
     "id": "vt-mvi95c88",
     "dbId": 27,
