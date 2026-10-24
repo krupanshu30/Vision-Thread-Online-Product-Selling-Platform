@@ -6,6 +6,26 @@
       "includeFiles": "index.html,css/**,js/**,images/**,backend/**"
     }
   },
+  "headers": [
+    {
+      "source": "/(css|images)/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.(ico|png|jpg|jpeg|svg|webp|gif))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000, stale-while-revalidate=86400"
+        }
+      ]
+    }
+  ],
   "routes": [
     {
       "src": "/uploads/(.*)",

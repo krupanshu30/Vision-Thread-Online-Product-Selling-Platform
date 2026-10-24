@@ -469,6 +469,20 @@ class ProductStore {
     this.syncWithBackend(true);
   }
 
+  hasCatalogChanged(prev, next) {
+    if (!Array.isArray(prev) || !Array.isArray(next)) return true;
+    if (prev.length !== next.length) return true;
+    for (let i = 0; i < prev.length; i++) {
+      const p = prev[i];
+      const n = next[i];
+      if (!p || !n) return true;
+      if (p.id !== n.id || p.price !== n.price || p.inStock !== n.inStock || p.image !== n.image || p.name !== n.name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async syncWithBackend(forceRefresh = false) {
     if (this.isSyncing && !forceRefresh) return;
     this.isSyncing = true;
@@ -492,22 +506,25 @@ class ProductStore {
 
       const data = await res.json();
       if (data.success && Array.isArray(data.products)) {
+        const incomingVersion = data.catalogVersion || this.catalogVersion || `v${data.products.length}`;
+        const changed = this.hasCatalogChanged(this.products, data.products);
+
         this.products = data.products;
-        this.catalogVersion = data.catalogVersion || Date.now().toString(36);
+        this.catalogVersion = incomingVersion;
         this.lastSyncedAt = Date.now();
         this.save();
 
-        // Broadcast global update event so any active component refreshes instantly
-        try {
-          window.dispatchEvent(new CustomEvent('vt:products-synced', { detail: this.products }));
-          window.dispatchEvent(new CustomEvent('vt:catalog-updated', { detail: { count: this.products.length, version: this.catalogVersion } }));
-        } catch (evErr) {}
+        if (changed || forceRefresh) {
+          try {
+            window.dispatchEvent(new CustomEvent('vt:products-synced', { detail: { products: this.products, changed } }));
+          } catch (evErr) {}
 
-        if (window.app && typeof window.app.onProductsSynced === 'function') {
-          window.app.onProductsSynced();
-        } else if (window.app && typeof window.app.renderProducts === 'function') {
-          window.app.renderProducts();
-          window.app.renderShopProducts();
+          // Only trigger UI re-renders if products actually changed
+          if (changed) {
+            if (window.app && typeof window.app.onProductsSynced === 'function') {
+              window.app.onProductsSynced(true);
+            }
+          }
         }
         this.isSyncing = false;
         return true;
@@ -535,9 +552,10 @@ class ProductStore {
       if (!res.ok) return;
       const data = await res.json();
       if (data.success && data.version) {
-        if (data.version !== this.catalogVersion || (typeof data.total === 'number' && data.total !== this.products.length)) {
-          await this.syncWithBackend(true);
+        if (this.catalogVersion && data.version === this.catalogVersion && (typeof data.total !== 'number' || data.total === this.products.length)) {
+          return;
         }
+        await this.syncWithBackend(false);
       }
     } catch (e) {}
   }

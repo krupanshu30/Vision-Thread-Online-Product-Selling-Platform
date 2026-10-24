@@ -62,12 +62,10 @@ class VisionThreadApp {
     this.renderInstagramGrid();
 
     // Listen for product sync from backend
-    window.addEventListener('vt:products-synced', () => {
-      this.onProductsSynced();
-    });
-
-    window.addEventListener('vt:catalog-updated', () => {
-      this.onProductsSynced();
+    window.addEventListener('vt:products-synced', (e) => {
+      if (e.detail?.changed !== false) {
+        this.onProductsSynced();
+      }
     });
 
     // Cross-tab / cross-window sync listener
@@ -130,7 +128,12 @@ class VisionThreadApp {
     window.addEventListener('hashchange', () => this.handleRoute());
   }
 
-  onProductsSynced() {
+  onProductsSynced(force = false) {
+    const currentVer = window.productStore ? window.productStore.catalogVersion : null;
+    if (!force && this._lastRenderedVersion && this._lastRenderedVersion === currentVer) {
+      return;
+    }
+    this._lastRenderedVersion = currentVer;
     this.renderCategories();
     this.renderProducts();
     this.renderShopProducts();
@@ -420,7 +423,7 @@ class VisionThreadApp {
     const allProducts = window.productStore.getAll();
     const featured = allProducts.slice(0, 8);
 
-    featuredContainer.innerHTML = featured.map(p => this.createProductCardHtml(p)).join('');
+    featuredContainer.innerHTML = featured.map((p, idx) => this.createProductCardHtml(p, idx)).join('');
   }
 
   renderShopProducts() {
@@ -481,20 +484,28 @@ class VisionThreadApp {
       return;
     }
 
-    shopContainer.innerHTML = items.map(p => this.createProductCardHtml(p)).join('');
+    shopContainer.innerHTML = items.map((p, idx) => this.createProductCardHtml(p, idx)).join('');
   }
 
-  createProductCardHtml(p) {
+  createProductCardHtml(p, index = 0) {
     const isWishlisted = this.wishlist.includes(p.id);
     const discount = p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
     const inStock = p.inStock !== false;
     const resolvedImg = this.resolveImageUrl(p.image);
+    const isAboveFold = index < 4;
+    const loadAttr = isAboveFold ? 'loading="eager" fetchpriority="high"' : 'loading="lazy" fetchpriority="auto"';
 
     return `
       <div class="product-card group ${!inStock ? 'opacity-90' : ''}" data-product-id="${p.id}">
         <!-- Image Container -->
         <div class="product-image-wrap">
-          <img src="${resolvedImg}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='images/pink-purple-lily-bouquet.jpg'" />
+          <img src="${resolvedImg}" 
+               alt="${p.name}" 
+               width="400" 
+               height="400" 
+               ${loadAttr} 
+               decoding="async" 
+               onerror="this.onerror=null;this.src='images/pink-purple-lily-bouquet.jpg'" />
           
           <!-- Badges -->
           <div class="card-badge ${!inStock ? '!bg-gray-800 !text-white' : ''}">
@@ -602,7 +613,7 @@ class VisionThreadApp {
         <!-- Gallery Section -->
         <div>
           <div class="rounded-2xl overflow-hidden aspect-square bg-pink-50 border border-pink-100 shadow-inner mb-3">
-            <img id="mainProductGalleryImg" src="${gallery[0]}" alt="${product.name}" onerror="this.onerror=null;this.src='images/pink-purple-lily-bouquet.jpg'" class="w-full h-full object-cover transition-all duration-300" />
+            <img id="mainProductGalleryImg" src="${gallery[0]}" alt="${product.name}" width="600" height="600" decoding="async" loading="eager" onerror="this.onerror=null;this.src='images/pink-purple-lily-bouquet.jpg'" class="w-full h-full object-cover transition-all duration-300" />
           </div>
           <div class="flex gap-2 overflow-x-auto pb-1">
             ${gallery.map((img, idx) => `
@@ -1610,7 +1621,7 @@ class VisionThreadApp {
     container.innerHTML = posts.map(post => `
       <a href="https://instagram.com/${this.instagramHandle}" target="_blank" rel="noopener noreferrer" 
          class="group relative overflow-hidden rounded-2xl aspect-square shadow-sm bg-pink-100 block">
-        <img src="${post.img}" alt="Instagram Post" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+        <img src="${post.img}" alt="Instagram Post" width="600" height="600" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
         <div class="absolute inset-0 bg-pink-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 text-white">
           <div class="flex items-center gap-1.5 text-xs font-semibold mb-1">
             ❤️ ${post.likes} likes

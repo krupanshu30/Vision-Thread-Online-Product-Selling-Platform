@@ -24,19 +24,30 @@ try {
   // Gracefully ignore on read-only environments
 }
 
+const staticImageOptions = {
+  maxAge: "30d",
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    if (/\.(jpg|jpeg|png|webp|gif|svg|ico)$/i.test(filePath)) {
+      res.setHeader("Cache-Control", "public, max-age=2592000, stale-while-revalidate=86400");
+    }
+  }
+};
+
 if (process.env.VERCEL) {
   // On Vercel: serve /tmp/uploads first (runtime uploads), then bundled uploads (committed images)
   const tmpUploadsDir = path.join("/tmp", "uploads");
   try {
     if (!fs.existsSync(tmpUploadsDir)) fs.mkdirSync(tmpUploadsDir, { recursive: true });
   } catch (e) {}
-  app.use("/uploads", express.static(tmpUploadsDir));
-  app.use("/uploads", express.static(uploadsDir)); // fallback: committed images
+  app.use("/uploads", express.static(tmpUploadsDir, staticImageOptions));
+  app.use("/uploads", express.static(uploadsDir, staticImageOptions)); // fallback: committed images
 } else {
-  app.use("/uploads", express.static(uploadsDir));
+  app.use("/uploads", express.static(uploadsDir, staticImageOptions));
 }
-app.use("/images", express.static(path.join(__dirname, "../images")));
-app.use("/admin/images", express.static(path.join(__dirname, "../images")));
+app.use("/images", express.static(path.join(__dirname, "../images"), staticImageOptions));
+app.use("/admin/images", express.static(path.join(__dirname, "../images"), staticImageOptions));
 
 // ============================================================
 // Security & Proxy Middleware
@@ -60,6 +71,10 @@ app.options("*", cors());
 // Anti-caching headers for storefront HTML and JS to ensure all mobile/device updates appear immediately
 app.use((req, res, next) => {
   const path_ = req.path;
+  // Never apply no-cache to images or uploads to allow smooth, flicker-free scrolling
+  if (/\.(jpg|jpeg|png|webp|gif|svg|ico)$/i.test(path_) || path_.startsWith("/uploads/")) {
+    return next();
+  }
   if (path_ === '/' || path_.endsWith('.html')) {
     res.set({
       'Cache-Control': 'no-cache, no-store, must-revalidate',

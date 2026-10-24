@@ -209,14 +209,20 @@ async function getCatalogVersionFromDb() {
   try {
     const [[countRow]] = await db.execute("SELECT COUNT(*) as total, UNIX_TIMESTAMP(MAX(updated_at)) as max_updated, UNIX_TIMESTAMP(MAX(created_at)) as max_created FROM products");
     if (countRow) {
-      catalogVersion = `v${countRow.total}_${countRow.max_updated || countRow.max_created || Date.now()}`;
+      catalogVersion = `v${countRow.total}_${countRow.max_updated || countRow.max_created || 1}`;
       return { version: catalogVersion, total: countRow.total, lastUpdated: countRow.max_updated || countRow.max_created };
     }
   } catch (err) {
     const cached = readProductsFromFileCache();
     if (cached.length > 0) {
-      catalogVersion = `v${cached.length}_cache_${Date.now()}`;
-      return { version: catalogVersion, total: cached.length, lastUpdated: null };
+      let cacheMtime = 1;
+      try {
+        if (fs.existsSync(cacheFilePath)) {
+          cacheMtime = Math.floor(fs.statSync(cacheFilePath).mtimeMs);
+        }
+      } catch (e) {}
+      catalogVersion = `v${cached.length}_cache_${cacheMtime}`;
+      return { version: catalogVersion, total: cached.length, lastUpdated: cacheMtime };
     }
   }
   return { version: catalogVersion, total: 0, lastUpdated: null };
