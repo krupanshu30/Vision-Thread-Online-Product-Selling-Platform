@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792852930267'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792852976782'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -69,7 +69,7 @@ const DEFAULT_PRODUCTS = [
     "id": "vt-mvi8mc5l",
     "dbId": 26,
     "productCode": "vt-mvi8mc5l",
-    "name": "lily keychain",
+    "name": "chafa keychain",
     "category": "Keychains",
     "price": 50,
     "originalPrice": 80,
@@ -92,7 +92,7 @@ const DEFAULT_PRODUCTS = [
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-21T14:58:52.000Z",
-    "updatedAt": "2026-10-21T14:58:52.000Z"
+    "updatedAt": "2026-10-24T14:42:56.000Z"
   },
   {
     "id": "vt-mvi7oc0n",
