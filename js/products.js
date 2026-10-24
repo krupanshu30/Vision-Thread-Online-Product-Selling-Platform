@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792854253098'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792854859714'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -24,13 +24,13 @@ const DATA_VERSION = '1792854253098'; // bumped for real-time mobile sync
  */
 
 const CATEGORIES = [
-  { id: 'all', name: 'All Crafts', icon: '✨', count: 12 },
+  { id: 'all', name: 'All Crafts', icon: '✨', count: 21 },
   { id: 'Handmade Flowers', name: 'Handmade Flowers', icon: '🌸', count: 2, image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80' },
   { id: 'Hair Accessories', name: 'Hair Accessories', icon: '🎀', count: 3, image: 'https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&w=600&q=80' },
-  { id: 'Keychains', name: 'Keychains', icon: '🔑', count: 1, image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80' },
+  { id: 'Keychains', name: 'Keychains', icon: '🔑', count: 4, image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80' },
   { id: 'Bouquets', name: 'Bouquets', icon: '💐', count: 4, image: 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=600&q=80' },
   { id: 'Gifts & Hampers', name: 'Gifts & Hampers', icon: '🎁', count: 1, image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=600&q=80' },
-  { id: 'Festive Crafts', name: 'Festive Crafts', icon: '🪔', count: 2, image: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=600&q=80' },
+  { id: 'Festive Crafts', name: 'Festive Crafts', icon: '🪔', count: 6, image: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=600&q=80' },
   { id: 'Home Decor', name: 'Home Decor', icon: '🏠', count: 1, image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=600&q=80' },
   { id: 'Other Crafts', name: 'Other Crafts', icon: '✨', count: 1, image: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=600&q=80' }
 ];
@@ -680,17 +680,19 @@ class ProductStore {
     const saved = localStorage.getItem(this.storageKey);
     this.catalogVersion = localStorage.getItem(this.storageKey + '_catalog_version') || '';
 
-    // If data version changed or cache is empty, refresh from latest defaults
+    // If data version changed or cached items are fewer than bundled products, refresh immediately
     if (saved && savedVersion === DATA_VERSION) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed) && parsed.length >= DEFAULT_PRODUCTS.length) {
           this.products = parsed;
         } else {
           this.products = [...DEFAULT_PRODUCTS];
+          this.save();
         }
       } catch (e) {
         this.products = [...DEFAULT_PRODUCTS];
+        this.save();
       }
     } else {
       this.products = [...DEFAULT_PRODUCTS];
@@ -748,14 +750,12 @@ class ProductStore {
 
         if (changed || forceRefresh) {
           try {
-            window.dispatchEvent(new CustomEvent('vt:products-synced', { detail: { products: this.products, changed } }));
+            window.dispatchEvent(new CustomEvent('vt:products-synced', { detail: { products: this.products, changed: true } }));
           } catch (evErr) {}
 
-          // Only trigger UI re-renders if products actually changed
-          if (changed) {
-            if (window.app && typeof window.app.onProductsSynced === 'function') {
-              window.app.onProductsSynced(true);
-            }
+          // Refresh UI components with latest products
+          if (window.app && typeof window.app.onProductsSynced === 'function') {
+            window.app.onProductsSynced(true);
           }
         }
         this.isSyncing = false;
