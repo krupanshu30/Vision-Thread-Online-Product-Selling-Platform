@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792852720592'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792852880739'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -98,14 +98,14 @@ const DEFAULT_PRODUCTS = [
     "id": "vt-mvi7oc0n",
     "dbId": 25,
     "productCode": "vt-mvi7oc0n",
-    "name": "handmade flower",
-    "category": "Handmade Flowers",
-    "price": 100,
-    "originalPrice": 120,
+    "name": "handmade Hibiscus Garland",
+    "category": "Festive Crafts",
+    "price": 350,
+    "originalPrice": 400,
     "rating": 5,
     "reviewsCount": 0,
     "badge": null,
-    "shortDescription": "handmade",
+    "shortDescription": "handmade, festival",
     "fullDescription": "",
     "image": "/uploads/prod_1792593114329_WhatsApp_Image_2026-10-20_at_2_40_09_PM.jpeg",
     "relativeImage": "/uploads/prod_1792593114329_WhatsApp_Image_2026-10-20_at_2_40_09_PM.jpeg",
@@ -121,7 +121,7 @@ const DEFAULT_PRODUCTS = [
     "customizable": false,
     "inStock": true,
     "createdAt": "2026-10-21T14:32:26.000Z",
-    "updatedAt": "2026-10-21T14:47:14.000Z"
+    "updatedAt": "2026-10-24T14:41:20.000Z"
   },
   {
     "id": "vt-01",
