@@ -15,15 +15,6 @@
           "value": "public, max-age=2592000, stale-while-revalidate=86400"
         }
       ]
-    },
-    {
-      "source": "/(.*\\.(ico|png|jpg|jpeg|svg|webp|gif))",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=2592000, stale-while-revalidate=86400"
-        }
-      ]
     }
   ],
   "routes": [
@@ -48,12 +39,8 @@
       "dest": "/api/index.js"
     },
     {
-      "src": "/(css|images)/(.*)",
-      "dest": "/$1/$2"
-    },
-    {
-      "src": "/(.*\\.(ico|png|jpg|jpeg|svg|webp|gif|woff|woff2|ttf|eot))",
-      "dest": "/$1"
+      "src": "/images/(.*)",
+      "dest": "/api/index.js"
     },
     {
       "src": "/(.*)",
