@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792854203737'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792854253098'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -46,7 +46,7 @@ const DEFAULT_PRODUCTS = [
     "originalPrice": 120,
     "rating": 5,
     "reviewsCount": 0,
-    "badge": null,
+    "badge": "Bestseller",
     "shortDescription": "realastic modak",
     "fullDescription": "",
     "image": "/uploads/prod_1792854163946_WhatsApp_Image_2026-10-20_at_2_40_04_PM.jpeg",
@@ -63,7 +63,7 @@ const DEFAULT_PRODUCTS = [
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-24T15:03:23.000Z",
-    "updatedAt": "2026-10-24T15:03:23.000Z"
+    "updatedAt": "2026-10-24T15:04:13.000Z"
   },
   {
     "id": "vt-mvmj1iaf",
