@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792853996854'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792854101476'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -36,6 +36,35 @@ const CATEGORIES = [
 ];
 
 const DEFAULT_PRODUCTS = [
+  {
+    "id": "vt-mvmj1iaf",
+    "dbId": 34,
+    "productCode": "vt-mvmj1iaf",
+    "name": "Bouquet",
+    "category": "Bouquets",
+    "price": 350,
+    "originalPrice": 450,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badge": null,
+    "shortDescription": "perfect for giftting,multi colour",
+    "fullDescription": "",
+    "image": "/uploads/prod_1792854047219_WhatsApp_Image_2026-10-20_at_2_39_56_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792854047219_WhatsApp_Image_2026-10-20_at_2_39_56_PM.jpeg",
+    "gallery": [
+      "/uploads/prod_1792854047219_WhatsApp_Image_2026-10-20_at_2_39_56_PM.jpeg"
+    ],
+    "colors": [
+      "Pink",
+      "White"
+    ],
+    "materials": "",
+    "dimensions": "",
+    "customizable": true,
+    "inStock": true,
+    "createdAt": "2026-10-24T15:01:41.000Z",
+    "updatedAt": "2026-10-24T15:01:41.000Z"
+  },
   {
     "id": "vt-mvmiz9ke",
     "dbId": 33,
