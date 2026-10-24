@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792853442210'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792853575100'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -36,6 +36,35 @@ const CATEGORIES = [
 ];
 
 const DEFAULT_PRODUCTS = [
+  {
+    "id": "vt-mvmiq84v",
+    "dbId": 30,
+    "productCode": "vt-mvmiq84v",
+    "name": "Name Plate",
+    "category": "Other Crafts",
+    "price": 350,
+    "originalPrice": 400,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badge": null,
+    "shortDescription": "standing name plate",
+    "fullDescription": "",
+    "image": "/uploads/prod_1792853525115_WhatsApp_Image_2026-10-20_at_2_40_13_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792853525115_WhatsApp_Image_2026-10-20_at_2_40_13_PM.jpeg",
+    "gallery": [
+      "/uploads/prod_1792853525115_WhatsApp_Image_2026-10-20_at_2_40_13_PM.jpeg"
+    ],
+    "colors": [
+      "Pink",
+      "White"
+    ],
+    "materials": "",
+    "dimensions": "",
+    "customizable": true,
+    "inStock": true,
+    "createdAt": "2026-10-24T14:52:55.000Z",
+    "updatedAt": "2026-10-24T14:52:55.000Z"
+  },
   {
     "id": "vt-mvmimg57",
     "dbId": 29,
