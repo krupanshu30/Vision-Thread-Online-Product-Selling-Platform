@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792853222014'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792853398857'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -36,6 +36,35 @@ const CATEGORIES = [
 ];
 
 const DEFAULT_PRODUCTS = [
+  {
+    "id": "vt-mvmimg57",
+    "dbId": 29,
+    "productCode": "vt-mvmimg57",
+    "name": "Hibiscus flower",
+    "category": "Festive Crafts",
+    "price": 350,
+    "originalPrice": 400,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badge": null,
+    "shortDescription": "🌺 Blooming Hibiscus",
+    "fullDescription": "",
+    "image": "/uploads/prod_1792853260093_WhatsApp_Image_2026-10-20_at_2_40_11_PM__1_.jpeg",
+    "relativeImage": "/uploads/prod_1792853260093_WhatsApp_Image_2026-10-20_at_2_40_11_PM__1_.jpeg",
+    "gallery": [
+      "/uploads/prod_1792853260093_WhatsApp_Image_2026-10-20_at_2_40_11_PM__1_.jpeg"
+    ],
+    "colors": [
+      "Pink",
+      "White"
+    ],
+    "materials": "",
+    "dimensions": "",
+    "customizable": true,
+    "inStock": true,
+    "createdAt": "2026-10-24T14:49:58.000Z",
+    "updatedAt": "2026-10-24T14:49:58.000Z"
+  },
   {
     "id": "vt-mvmiinot",
     "dbId": 28,
