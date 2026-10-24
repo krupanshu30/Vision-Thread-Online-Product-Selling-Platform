@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792852976782'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792853011873'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -129,8 +129,8 @@ const DEFAULT_PRODUCTS = [
     "productCode": "vt-01",
     "name": "sunflower Bouquet",
     "category": "Bouquets",
-    "price": 50,
-    "originalPrice": 350,
+    "price": 350,
+    "originalPrice": 450,
     "rating": 4.9,
     "reviewsCount": 38,
     "badge": "Bestseller",
@@ -152,7 +152,7 @@ const DEFAULT_PRODUCTS = [
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
-    "updatedAt": "2026-10-20T11:00:10.000Z"
+    "updatedAt": "2026-10-24T14:43:31.000Z"
   },
   {
     "id": "vt-02",

@@ -92,8 +92,8 @@
     "productCode": "vt-01",
     "name": "sunflower Bouquet",
     "category": "Bouquets",
-    "price": 50,
-    "originalPrice": 350,
+    "price": 350,
+    "originalPrice": 450,
     "rating": 4.9,
     "reviewsCount": 38,
     "badge": "Bestseller",
@@ -115,7 +115,7 @@
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-09T15:49:37.000Z",
-    "updatedAt": "2026-10-20T11:00:10.000Z"
+    "updatedAt": "2026-10-24T14:43:31.000Z"
   },
   {
     "id": "vt-02",
