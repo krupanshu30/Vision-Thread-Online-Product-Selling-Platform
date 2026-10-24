@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792853398857'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792853442210'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -60,10 +60,10 @@ const DEFAULT_PRODUCTS = [
     ],
     "materials": "",
     "dimensions": "",
-    "customizable": true,
+    "customizable": false,
     "inStock": true,
     "createdAt": "2026-10-24T14:49:58.000Z",
-    "updatedAt": "2026-10-24T14:49:58.000Z"
+    "updatedAt": "2026-10-24T14:50:42.000Z"
   },
   {
     "id": "vt-mvmiinot",
