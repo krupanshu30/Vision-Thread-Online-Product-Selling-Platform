@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792853918277'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792853996854'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -36,6 +36,35 @@ const CATEGORIES = [
 ];
 
 const DEFAULT_PRODUCTS = [
+  {
+    "id": "vt-mvmiz9ke",
+    "dbId": 33,
+    "productCode": "vt-mvmiz9ke",
+    "name": "sunflower keychain",
+    "category": "Keychains",
+    "price": 50,
+    "originalPrice": 100,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badge": null,
+    "shortDescription": "handmade",
+    "fullDescription": "",
+    "image": "/uploads/prod_1792853958325_WhatsApp_Image_2026-10-20_at_2_39_59_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792853958325_WhatsApp_Image_2026-10-20_at_2_39_59_PM.jpeg",
+    "gallery": [
+      "/uploads/prod_1792853958325_WhatsApp_Image_2026-10-20_at_2_39_59_PM.jpeg"
+    ],
+    "colors": [
+      "Pink",
+      "White"
+    ],
+    "materials": "",
+    "dimensions": "",
+    "customizable": true,
+    "inStock": true,
+    "createdAt": "2026-10-24T14:59:56.000Z",
+    "updatedAt": "2026-10-24T14:59:56.000Z"
+  },
   {
     "id": "vt-mvmixkxg",
     "dbId": 32,
