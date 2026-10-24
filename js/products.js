@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792595619384'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792852720592'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -40,10 +40,10 @@ const DEFAULT_PRODUCTS = [
     "id": "vt-mvi95c88",
     "dbId": 27,
     "productCode": "vt-mvi95c88",
-    "name": "Pink & Purple Lily Bouquet",
+    "name": "Hair Tie",
     "category": "Hair Accessories",
-    "price": 50,
-    "originalPrice": 80,
+    "price": 70,
+    "originalPrice": 100,
     "rating": 5,
     "reviewsCount": 0,
     "badge": null,
@@ -63,7 +63,7 @@ const DEFAULT_PRODUCTS = [
     "customizable": true,
     "inStock": true,
     "createdAt": "2026-10-21T15:13:39.000Z",
-    "updatedAt": "2026-10-21T15:13:39.000Z"
+    "updatedAt": "2026-10-24T14:38:40.000Z"
   },
   {
     "id": "vt-mvi8mc5l",
