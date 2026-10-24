@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792853575100'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792853746157'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -36,6 +36,35 @@ const CATEGORIES = [
 ];
 
 const DEFAULT_PRODUCTS = [
+  {
+    "id": "vt-mvmitw4n",
+    "dbId": 31,
+    "productCode": "vt-mvmitw4n",
+    "name": "Multiflower Bouquet",
+    "category": "Bouquets",
+    "price": 550,
+    "originalPrice": 650,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badge": null,
+    "shortDescription": "🌈 Rainbow Hibiscus Bouquet",
+    "fullDescription": "",
+    "image": "/uploads/prod_1792853629788_WhatsApp_Image_2026-10-20_at_2_40_01_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792853629788_WhatsApp_Image_2026-10-20_at_2_40_01_PM.jpeg",
+    "gallery": [
+      "/uploads/prod_1792853629788_WhatsApp_Image_2026-10-20_at_2_40_01_PM.jpeg"
+    ],
+    "colors": [
+      "Pink",
+      "White"
+    ],
+    "materials": "",
+    "dimensions": "",
+    "customizable": true,
+    "inStock": true,
+    "createdAt": "2026-10-24T14:55:46.000Z",
+    "updatedAt": "2026-10-24T14:55:46.000Z"
+  },
   {
     "id": "vt-mvmiq84v",
     "dbId": 30,
