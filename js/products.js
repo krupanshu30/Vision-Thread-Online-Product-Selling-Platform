@@ -1,4 +1,4 @@
-const DATA_VERSION = '1792853746157'; // bumped for real-time mobile sync
+const DATA_VERSION = '1792853918277'; // bumped for real-time mobile sync
 
 /**
  * Vision Thread (@vision_thread00) - Product Catalog
@@ -36,6 +36,35 @@ const CATEGORIES = [
 ];
 
 const DEFAULT_PRODUCTS = [
+  {
+    "id": "vt-mvmixkxg",
+    "dbId": 32,
+    "productCode": "vt-mvmixkxg",
+    "name": "Pink & Purple Lily Bouquet",
+    "category": "Bouquets",
+    "price": 400,
+    "originalPrice": null,
+    "rating": 5,
+    "reviewsCount": 0,
+    "badge": null,
+    "shortDescription": "Delicate handmade lilies crafted with velvety chenille pipe cleaners and ribbon wraps.",
+    "fullDescription": "",
+    "image": "/uploads/prod_1792853855469_WhatsApp_Image_2026-10-20_at_2_40_07_PM.jpeg",
+    "relativeImage": "/uploads/prod_1792853855469_WhatsApp_Image_2026-10-20_at_2_40_07_PM.jpeg",
+    "gallery": [
+      "/uploads/prod_1792853855469_WhatsApp_Image_2026-10-20_at_2_40_07_PM.jpeg"
+    ],
+    "colors": [
+      "Pink",
+      "White"
+    ],
+    "materials": "",
+    "dimensions": "",
+    "customizable": true,
+    "inStock": true,
+    "createdAt": "2026-10-24T14:58:38.000Z",
+    "updatedAt": "2026-10-24T14:58:38.000Z"
+  },
   {
     "id": "vt-mvmitw4n",
     "dbId": 31,
