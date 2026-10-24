@@ -1439,8 +1439,13 @@ class VisionThreadApp {
     if (printableReceipt) {
       printableReceipt.innerHTML = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
-          <h2 style="color: #ec4899; margin-bottom: 2px;">Vision Thread (@vision_thread00)</h2>
-          <p style="font-size: 12px; color: #666; margin-top: 0;">Handmade With Love ❤️</p>
+          <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 10px;">
+            <img src="images/logo.png" alt="Logo" style="width: 54px; height: 54px; border-radius: 50%; object-fit: cover; border: 2px solid #fbcfe8;" />
+            <div>
+              <h2 style="color: #ec4899; margin: 0; font-size: 20px;">Vision Thread (@vision_thread00)</h2>
+              <p style="font-size: 12px; color: #666; margin: 3px 0 0 0;">Handmade With Love ❤️ • by Manasi Gharat</p>
+            </div>
+          </div>
           <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;" />
           <p><strong>Order ID:</strong> ${order.orderId}</p>
           <p><strong>Date:</strong> ${order.date}</p>
