@@ -118,9 +118,9 @@ function syncCatalogFiles(products) {
       const newVersion = Date.now().toString();
       content = content.replace(/const DATA_VERSION\s*=\s*['"][^'"]*['"];/, `const DATA_VERSION = '${newVersion}';`);
       const jsonProducts = JSON.stringify(products, null, 2);
-      const regex = /const DEFAULT_PRODUCTS\s*=\s*\[[\s\S]*?\];\s*(window\.getVtApiBase)/;
+      const regex = /const DEFAULT_PRODUCTS\s*=\s*\[[\s\S]*?\];/;
       if (regex.test(content)) {
-        content = content.replace(regex, `const DEFAULT_PRODUCTS = ${jsonProducts};\n\n$1`);
+        content = content.replace(regex, `const DEFAULT_PRODUCTS = ${jsonProducts};`);
         fs.writeFileSync(jsProductsFilePath, content, "utf8");
         console.log("[PRODUCTS] ✅ Synchronized js/products.js (Version: " + newVersion + ", Products: " + products.length + ")");
       }
