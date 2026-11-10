@@ -170,8 +170,9 @@ function triggerAutoGitDeploy(reason = "Product catalog update") {
   // Step 2: Commit (allow failure if nothing to commit)
   const commitMsg = `Auto-deploy: ${safeReason} [auto-sync]`;
   const commitCmd = `git commit -m "${commitMsg}"`;
-  // Step 3: Push
-  const pushCmd = `git push origin main`;
+  // Step 3: Push — push to manasi remote (ManasiGharat) since it has valid credentials
+  // Vercel deploy hook is pinged separately for live deployment
+  const pushCmd = `git push manasi main`;
 
   console.log(`[AUTO-DEPLOY] 🚀 Deploying to GitHub & Vercel (${safeReason})...`);
 
